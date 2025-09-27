@@ -7,7 +7,7 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const [color, setColor] = useState("success"); // success ili danger
+  const [color, setColor] = useState("success");
 
   const navigate = useNavigate();
 
@@ -26,6 +26,7 @@ function Login() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // obavezno za cookie
         body: JSON.stringify({ username, password }),
       });
 
@@ -35,16 +36,17 @@ function Login() {
         setMessage(data.detail || "Došlo je do greške");
         setColor("danger");
       } else {
+        // Sačuvaj token u localStorage
+        console.log(data)
+        localStorage.setItem("user", JSON.stringify(data.user));
+
         setMessage(`Uspešno prijavljen! Dobrodošao ${data.username}`);
         setColor("success");
 
-        // Sačuvaj korisnika u localStorage ili context
-        // localStorage.setItem("user", JSON.stringify(data));
-
-        // Navigacija na Dashboard nakon npr. 1s da korisnik vidi poruku
+        // Navigacija na Dashboard nakon kratkog delay-a
         setTimeout(() => {
           navigate("/dashboard");
-        }, 1000);
+        }, 800);
       }
     } catch (error) {
       setMessage("Greška prilikom konekcije sa serverom");
