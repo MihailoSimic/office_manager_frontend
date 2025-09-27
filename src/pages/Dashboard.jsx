@@ -5,7 +5,7 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("reserve");
 
   const sidebarStyle = {
-    width: "220px",
+    width: "20%",
     background: "rgba(0, 0, 0, 0.4)", // tamniji, proziran
     color: "#fff",
     padding: "20px",
@@ -41,11 +41,9 @@ const Dashboard = () => {
     <div style={containerStyle}>
       {/* Sidebar */}
       <div style={sidebarStyle}>
+        <h3>Office Manager</h3>
         <Button style={buttonStyle(activeTab === "reserve")} onClick={() => setActiveTab("reserve")}>
           Rezerviši mesto
-        </Button>
-        <Button style={buttonStyle(activeTab === "profile")} onClick={() => setActiveTab("profile")}>
-          Uredi profil
         </Button>
         <Button style={buttonStyle(activeTab === "password")} onClick={() => setActiveTab("password")}>
           Promeni lozinku

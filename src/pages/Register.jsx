@@ -1,18 +1,28 @@
 import React, { useState } from "react";
 import { Row, Col, Input, Button, Alert } from "reactstrap";
+import { useNavigate } from "react-router-dom"; // import navigate
 import globalStyles from "../styles/GlobalStyles";
 
 function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState(""); 
   const [message, setMessage] = useState("");
   const [color, setColor] = useState("success");
+
+  const navigate = useNavigate(); // hook za navigaciju
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (username === "" || password === "") {
-      setMessage("Morate uneti username i password!");
+    if (username === "" || password === "" || confirmPassword === "") {
+      setMessage("Morate popuniti sva polja!");
+      setColor("danger");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setMessage("Lozinke se ne poklapaju!");
       setColor("danger");
       return;
     }
@@ -30,10 +40,13 @@ function Register() {
         setMessage(data.detail || "Registracija neuspešna");
         setColor("danger");
       } else {
-        setMessage(`Korisnik ${data.username} je uspešno registrovan!`);
+        setMessage(`Korisnik ${data.user?.username} je uspešno registrovan!`);
         setColor("success");
 
-        // po želji, možeš odmah prebaciti na login ili sačuvati info
+        // kratko čekanje pa preusmeravanje
+        setTimeout(() => {
+          navigate("/dashboard"); // preusmeravanje na dashboard
+        }, 1000);
       }
     } catch (error) {
       setMessage("Greška prilikom konekcije sa serverom");
@@ -45,20 +58,27 @@ function Register() {
     <div style={globalStyles.container}>
       <Row className="w-100 justify-content-center">
         <Col xs="12" sm="8" md="6" lg="4">
-          <h2 className="text-center mb-4">Register</h2>
+          <h2 className="text-center mb-4">Registracija</h2>
           <form onSubmit={handleSubmit}>
             <Input
               type="text"
-              placeholder="Username"
+              placeholder="Korisničko ime"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="mb-3"
             />
             <Input
               type="password"
-              placeholder="Password"
+              placeholder="Lozinka"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="mb-3"
+            />
+            <Input
+              type="password"
+              placeholder="Ponovi lozinku"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               className="mb-3"
             />
             <Button type="submit" color="primary" className="w-100 mb-3">
