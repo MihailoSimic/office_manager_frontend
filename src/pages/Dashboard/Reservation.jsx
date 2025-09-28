@@ -4,7 +4,7 @@ import Flatpickr from "react-flatpickr";
 import format from "date-fns/format";
 import "flatpickr/dist/themes/material_blue.css";
 
-function Reservation({ seats, setSeats}) {
+function Reservation({ seats, setSeats, reservations, setReservations }) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedSeat, setSelectedSeat] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);

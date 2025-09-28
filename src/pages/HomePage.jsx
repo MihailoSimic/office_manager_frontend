@@ -12,10 +12,10 @@ export default function HomePage() {
         </p>
         <div style={{ display: "flex", gap: "20px", justifyContent: "center" }}>
           <Button color="success" tag={Link} to="/login">
-            Login
+            Uloguj se
           </Button>
           <Button color="primary" tag={Link} to="/register">
-            Register
+            Registruj se
           </Button>
         </div>
       </div>

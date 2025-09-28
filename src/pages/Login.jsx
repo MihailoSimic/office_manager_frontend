@@ -40,12 +40,17 @@ function Login() {
         console.log(data)
         localStorage.setItem("user", JSON.stringify(data.user));
 
-        setMessage(`Uspešno prijavljen! Dobrodošao ${data.username}`);
+        setMessage(`Uspešno prijavljen! Dobrodošao ${data.user?.username}`);
         setColor("success");
 
         // Navigacija na Dashboard nakon kratkog delay-a
         setTimeout(() => {
-          navigate("/dashboard");
+          console.log(data.user.role)
+          if (data.user.role === "admin") {
+            navigate("/admin-dashboard");
+          } else {
+            navigate("/dashboard");
+          }
         }, 800);
       }
     } catch (error) {
@@ -57,31 +62,42 @@ function Login() {
     <div style={globalStyles.container}>
       <Row className="w-100 justify-content-center">
         <Col xs="12" sm="8" md="6" lg="4">
-          <h2 className="text-center mb-4">Login</h2>
-          <form onSubmit={handleSubmit}>
+          <h2 className="text-center mb-4">Uloguj se</h2>
+          <form onSubmit={handleSubmit} className="text-center">
             <Input
               type="text"
-              placeholder="Username"
+              placeholder="Korisničko ime"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="mb-3"
             />
             <Input
               type="password"
-              placeholder="Password"
+              placeholder="Lozinka"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mb-3"
+              className="mb-4"
             />
-            <Button
-              type="submit"
-              color="success"
-              className="w-100 mb-3"
-            >
-              Login
-            </Button>
+
+            {message && <Alert color={color}>{message}</Alert>}
+
+            <div className="d-flex justify-content-between">
+              <Button
+                color="secondary"
+                onClick={() => navigate("/")}
+                className="w-45"
+              >
+                Odustani
+              </Button>
+              <Button
+                type="submit"
+                color="success"
+                className="w-45"
+              >
+                Uloguj se
+              </Button>
+            </div>
           </form>
-          {message && <Alert color={color}>{message}</Alert>}
         </Col>
       </Row>
     </div>

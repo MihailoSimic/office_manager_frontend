@@ -41,6 +41,7 @@ function Register() {
         setColor("danger");
       } else {
         setMessage(`Korisnik ${data.user?.username} je uspešno registrovan!`);
+        localStorage.setItem("user", JSON.stringify(data.user));
         setColor("success");
 
         // kratko čekanje pa preusmeravanje
@@ -59,7 +60,7 @@ function Register() {
       <Row className="w-100 justify-content-center">
         <Col xs="12" sm="8" md="6" lg="4">
           <h2 className="text-center mb-4">Registracija</h2>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="text-center">
             <Input
               type="text"
               placeholder="Korisničko ime"
@@ -79,15 +80,32 @@ function Register() {
               placeholder="Ponovi lozinku"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="mb-3"
+              className="mb-4"
             />
-            <Button type="submit" color="primary" className="w-100 mb-3">
-              Register
-            </Button>
+
+            <div className="d-flex justify-content-between">
+              <Button
+                type="button"
+                color="secondary"
+                onClick={() => navigate("/")}
+                className="w-45"
+              >
+                Odustani
+              </Button>
+              <Button
+                type="submit"
+                color="primary"
+                className="w-45"
+              >
+                Registruj se
+              </Button>
+            </div>
           </form>
-          {message && <Alert color={color}>{message}</Alert>}
+
+          {message && <Alert color={color} className="mt-3">{message}</Alert>}
         </Col>
       </Row>
+
     </div>
   );
 }
