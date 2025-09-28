@@ -8,6 +8,7 @@ import FirstPage from "./FirstPage";
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("reservations");
   const [reservations, setReservations] = useState([]);
+  const [seats, setSeats] = useState([]);
   const [users, setUsers] = useState([]);
 
   const sidebarStyle = {
@@ -70,8 +71,22 @@ const AdminDashboard = () => {
       }
     };
 
+    const fetchSeats = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/seat", {
+          method: "GET",
+          credentials: "include",
+        });
+        const data = await response.json();
+        setSeats(data);
+      } catch (error) {
+        console.error("Greška prilikom učitavanja sedista:", error);
+      }
+    };
+
     fetchReservations();
     fetchUsers();
+    fetchSeats();
   }, []);
 
   return (
@@ -112,7 +127,14 @@ const AdminDashboard = () => {
       <div style={contentStyle}>
         {activeTab === "home" && <FirstPage user={JSON.parse(localStorage.getItem("user"))}/>}
         {activeTab === "reservations" && (
-          <AdminReservations reservations={reservations} setReservations={setReservations} />
+          <AdminReservations 
+            reservations={reservations}
+            setReservations={setReservations}
+            seats={seats}
+            setSeats={setSeats}
+            users={users}
+            setUsers={setUsers}
+          />
         )}
         {activeTab === "newUsers" && (
           <div>Ovde će ići forma za nove korisnike</div>

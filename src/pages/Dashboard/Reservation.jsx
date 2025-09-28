@@ -1,23 +1,33 @@
-import React, { useEffect, useState } from "react";
-import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from "reactstrap";
+import React, { useState } from "react";
+import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import Flatpickr from "react-flatpickr";
 import format from "date-fns/format";
 import "flatpickr/dist/themes/material_blue.css";
 
-function Reservation({ seats, setSeats, reservations, setReservations }) {
+function Reservation({ seats, reservations, setReservations }) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedSeat, setSelectedSeat] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [note, setNote] = useState("");
 
-  // Grupisanje sedista po redovima
+  // Grupisanje sedišta po redovima
   const groupedSeats = seats.reduce((acc, seat) => {
     if (!acc[seat.row]) acc[seat.row] = [];
     acc[seat.row].push(seat);
     return acc;
   }, {});
 
+  // Provera da li je sedište već rezervisano za odabrani datum
+  const isSeatReserved = (seatNumber) => {
+    return reservations.some(
+      (r) =>
+        r.seat_number === seatNumber &&
+        r.date === format(selectedDate, "yyyy-MM-dd") &&
+        r.status === "approved"
+    );
+  };
+
   const handleSeatClick = (seat) => {
+    if (isSeatReserved(seat.seat_number)) return; // ne otvara modal za zauzeta mesta
     setSelectedSeat(seat);
     setModalOpen(true);
   };
@@ -29,18 +39,23 @@ function Reservation({ seats, setSeats, reservations, setReservations }) {
       const response = await fetch("http://localhost:8000/reservation/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // salje cookie
+        credentials: "include",
         body: JSON.stringify({
           seat_number: selectedSeat.seat_number,
           date: format(selectedDate, "yyyy-MM-dd"),
           username: JSON.parse(localStorage.getItem("user")).username,
-          status: "pending"
+          status: "pending",
         }),
       });
 
       const data = await response.json();
       if (response.ok) {
-        alert("Rezervacija poslana!");
+        alert("Rezervacija poslata!");
+        // refresh rezervacija
+        const res = await fetch("http://localhost:8000/reservation", {
+          credentials: "include",
+        });
+        setReservations(await res.json());
       } else {
         alert(data.detail || "Greška prilikom rezervacije");
       }
@@ -50,7 +65,6 @@ function Reservation({ seats, setSeats, reservations, setReservations }) {
     }
 
     setModalOpen(false);
-    setNote("");
   };
 
   return (
@@ -68,20 +82,28 @@ function Reservation({ seats, setSeats, reservations, setReservations }) {
 
       {Object.keys(groupedSeats).map((rowNumber) => (
         <Row key={rowNumber} className="mb-2" style={{ justifyContent: "center" }}>
-          {groupedSeats[rowNumber].map((seat) => (
-            <Col key={seat.id} xs="auto">
-              <Button color="primary" onClick={() => handleSeatClick(seat)}>
-                {seat.seat_number}
-              </Button>
-            </Col>
-          ))}
+          {groupedSeats[rowNumber].map((seat) => {
+            const reserved = isSeatReserved(seat.seat_number);
+            return (
+              <Col key={seat.id} xs="auto">
+                <Button
+                  color={reserved ? "secondary" : "success"}
+                  disabled={reserved}
+                  onClick={() => handleSeatClick(seat)}
+                  className="m-1"
+                >
+                  {seat.seat_number}
+                </Button>
+              </Col>
+            );
+          })}
         </Row>
       ))}
 
-      {/* Modal za rezervaciju */}
+      {/* Modal za potvrdu rezervacije */}
       <Modal isOpen={modalOpen} toggle={() => setModalOpen(!modalOpen)}>
         <ModalHeader toggle={() => setModalOpen(false)}>
-          Rezervacija sedista {selectedSeat?.seat_number}
+          Rezervacija sedišta {selectedSeat?.seat_number}
         </ModalHeader>
         <ModalBody>
           <p>Datum: {selectedDate.toLocaleDateString()}</p>
