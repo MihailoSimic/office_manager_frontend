@@ -6,18 +6,37 @@ import Register from "./pages/Register";
 import HomePage from "./pages/HomePage";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import ProtectedRoute from "./pages/common/ProtectedRoute";
+import PageNotFound from "./pages/PageNotFound";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<HomePage />} />       {/* početna */}
-        <Route path="/login" element={<Login />} />      {/* login stranica */}
-        <Route path="/register" element={<Register />} />{/* registracija */}
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/" element={<HomePage />} /> {/* početna */}
+        <Route path="/login" element={<Login />} /> {/* login stranica */}
+        <Route path="/register" element={<Register />} /> {/* registracija */}
 
+        {/* Zaštićene rute */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute requiredRole="user">
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin-dashboard"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<PageNotFound />} />
       </Routes>
     </Router>
   );

@@ -3,10 +3,12 @@ import { Button } from "reactstrap";
 import Logout from "./Logout";
 import FirstPage from "./FirstPage";
 import Reservation from "./Reservation";
+import ChangePassword from "../common/ChangePassword";
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("home");
   const [seats, setSeats] = useState([]);
   const [reservations, setReservations] = useState([]);
+  const user = JSON.parse(localStorage.getItem("user"));
 
   const sidebarStyle = {
     width: "20%",
@@ -78,10 +80,10 @@ const Dashboard = () => {
         <Button style={buttonStyle(activeTab === "home")} onClick={() => setActiveTab("home")}>
           Početna strana
         </Button>
-        <Button style={buttonStyle(activeTab === "reserve")} onClick={() => setActiveTab("reserve")}>
+        <Button style={buttonStyle(activeTab === "reserve")} disabled = {!user?.approved} onClick={() => setActiveTab("reserve")}>
           Rezerviši mesto
         </Button>
-        <Button style={buttonStyle(activeTab === "password")} onClick={() => setActiveTab("password")}>
+        <Button style={buttonStyle(activeTab === "password")} disabled = {!user?.approved} onClick={() => setActiveTab("password")}>
           Promeni lozinku
         </Button>
         <Button style={buttonStyle(activeTab === "logout")} onClick={() => setActiveTab("logout")}>
@@ -102,7 +104,7 @@ const Dashboard = () => {
           </Reservation>
           )
         }
-        {activeTab === "password" && <div>Ovde će ići forma za promenu lozinke</div>}
+        {activeTab === "password" && <ChangePassword />}
         {activeTab === "logout" && <Logout activeTab={activeTab} setActiveTab={setActiveTab}/>}
       </div>
     </div>

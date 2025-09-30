@@ -45,7 +45,6 @@ const AdminReservations = ({ reservations, setReservations, seats, setSeats }) =
         r._id === id ? { ...r, status: "approved" } : r
       );
       const res = updated.find((r) => r._id === id);
-      console.log("Updated res", res);
 
       const response = await fetch(
         `http://localhost:8000/reservation/${id}?status=approved`,
@@ -55,7 +54,6 @@ const AdminReservations = ({ reservations, setReservations, seats, setSeats }) =
           headers: { "Content-Type": "application/json" },
         }
       );
-      console.log(response)
       if (response.ok) {
         setReservations(updated);
 
@@ -69,7 +67,6 @@ const AdminReservations = ({ reservations, setReservations, seats, setSeats }) =
         });
       } else {
         const errorData = await response.json();
-        console.log(errorData);
         Swal.fire({
           toast: true,
           position: "top-end",
@@ -98,7 +95,6 @@ const AdminReservations = ({ reservations, setReservations, seats, setSeats }) =
         r._id === id ? { ...r, status: "rejected" } : r
       );
       const res = updated.find((r) => r._id === id);
-      console.log('Updated res', res)
       const response = fetch(`http://localhost:8000/reservation/${id}?status=rejected`, {
         method: "PUT",
         credentials: "include",          // OBAVEZNO za cookie auth

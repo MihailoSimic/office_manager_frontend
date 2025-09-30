@@ -6,10 +6,22 @@ import globalStyles from "../../styles/GlobalStyles";
 function Logout({ activeTab, setActiveTab }) {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("user")
+  const handleLogout = async () => {
+  try {
+    await fetch("http://localhost:8000/user/logout", {
+      method: "POST",
+      credentials: "include" // BITNO da šalje HttpOnly cookie
+    });
+
+    // Opcionalno briši localStorage
+    localStorage.removeItem("user");
+
+    // Preusmeri korisnika
     navigate("/login");
-  };
+  } catch (err) {
+    console.error("Logout nije uspeo", err);
+  }
+};
 
   const handleCancel = () => {
     setActiveTab("home");

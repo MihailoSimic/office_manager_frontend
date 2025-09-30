@@ -4,13 +4,15 @@ import Logout from "../Dashboard/Logout";
 // Ovde importuj komponente za admin sekcije:
 import AdminReservations from "./AdminReservations";
 import FirstPage from "./FirstPage";
+import ChangePassword from "../common/ChangePassword";
+import Users from "./Users";
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState("reservations");
-  const [reservations, setReservations] = useState([]);
-  const [seats, setSeats] = useState([]);
-  const [users, setUsers] = useState([]);
-
+  const [activeTab, setActiveTab] = useState("reservations")
+  const [reservations, setReservations] = useState([])
+  const [seats, setSeats] = useState([])
+  const [users, setUsers] = useState([])
+  const user = JSON.parse(localStorage.getItem("user"))
   const sidebarStyle = {
     width: "20%",
     background: "rgba(0, 0, 0, 0.4)",
@@ -65,7 +67,7 @@ const AdminDashboard = () => {
           credentials: "include",
         });
         const data = await response.json();
-        setUsers(data);
+        setUsers(data.users);
       } catch (error) {
         console.error("Greška prilikom učitavanja novih korisnika:", error);
       }
@@ -107,7 +109,7 @@ const AdminDashboard = () => {
           style={buttonStyle(activeTab === "newUsers")}
           onClick={() => setActiveTab("newUsers")}
         >
-          Novi korisnici
+          Korisnici
         </Button>
         <Button
           style={buttonStyle(activeTab === "password")}
@@ -137,9 +139,12 @@ const AdminDashboard = () => {
           />
         )}
         {activeTab === "newUsers" && (
-          <div>Ovde će ići forma za nove korisnike</div>
+          <Users
+            users={users}
+            setUsers={setUsers}
+          />
         )}
-        {activeTab === "password" && <div>Ovde će ići forma za promenu lozinke</div>}
+        {activeTab === "password" && <ChangePassword />}
         {activeTab === "logout" && <Logout activeTab={activeTab} setActiveTab={setActiveTab} />}
       </div>
     </div>

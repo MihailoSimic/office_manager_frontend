@@ -24,8 +24,14 @@ function FirstPage({ user }) {
                 Drago nam je što koristite Office Seat Manager.
               </CardText>
               <CardText style={{ color: "#444", fontSize: "1.1rem" }}>
-                <strong>Korisničko ime:</strong> {user?.username} <br />
-                <strong>Uloga:</strong> {user?.role}
+                <strong>Korisničko ime:</strong> {user?.username} <br/>
+                <strong>Uloga:</strong> {user?.role} <br/>
+                <strong>
+                  Odobren:{" "}
+                  <span style={{ color: user.approved ? "green" : "red" }}>
+                    {user.approved ? "Da" : "Ne"}
+                  </span>
+                </strong>
               </CardText>
             </CardBody>
           </Card>

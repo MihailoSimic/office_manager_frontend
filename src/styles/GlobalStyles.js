@@ -44,7 +44,7 @@ const globalStyles = {
     fontSize: "1rem",
     minWidth: "120px",
     textAlign: "center",
-  },
+  }
 };
 
 export default globalStyles;
