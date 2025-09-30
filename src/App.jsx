@@ -6,7 +6,7 @@ import Register from "./pages/Register";
 import HomePage from "./pages/HomePage";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
-import ProtectedRoute from "./pages/common/ProtectedRoute";
+import ProtectedRoute from "./pages/components/ProtectedRoute";
 import PageNotFound from "./pages/PageNotFound";
 import "bootstrap/dist/css/bootstrap.min.css";
 

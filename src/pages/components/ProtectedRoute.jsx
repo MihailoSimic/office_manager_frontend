@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-
+import LoadingScreen from "./LoadingScreen";
 const ProtectedRoute = ({ children, requiredRole }) => {
   const [loading, setLoading] = useState(true);
   const [allowed, setAllowed] = useState(false);
@@ -74,7 +74,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     validate();
   }, []);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <LoadingScreen />;
   return allowed ? children : null;
 };
 

@@ -3,15 +3,13 @@ import { Button } from "reactstrap";
 import Logout from "../Dashboard/Logout";
 // Ovde importuj komponente za admin sekcije:
 import AdminReservations from "./AdminReservations";
-import FirstPage from "./FirstPage";
+import FirstPage from "../common/FirstPage";
 import ChangePassword from "../common/ChangePassword";
 import Users from "./Users";
+import OfficeEditor from "./OfficeEditor";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("reservations")
-  const [reservations, setReservations] = useState([])
-  const [seats, setSeats] = useState([])
-  const [users, setUsers] = useState([])
   const user = JSON.parse(localStorage.getItem("user"))
   const sidebarStyle = {
     width: "20%",
@@ -46,51 +44,6 @@ const AdminDashboard = () => {
     color: "#333",
   };
 
-  useEffect(() => {
-    const fetchReservations = async () => {
-      try {
-        const response = await fetch("http://localhost:8000/reservation", {
-          method: "GET",
-          credentials: "include",
-        });
-        const data = await response.json();
-        setReservations(data);
-      } catch (error) {
-        console.error("Greška prilikom učitavanja rezervacija:", error);
-      }
-    };
-
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch("http://localhost:8000/user", {
-          method: "GET",
-          credentials: "include",
-        });
-        const data = await response.json();
-        setUsers(data.users);
-      } catch (error) {
-        console.error("Greška prilikom učitavanja novih korisnika:", error);
-      }
-    };
-
-    const fetchSeats = async () => {
-      try {
-        const response = await fetch("http://localhost:8000/seat", {
-          method: "GET",
-          credentials: "include",
-        });
-        const data = await response.json();
-        setSeats(data);
-      } catch (error) {
-        console.error("Greška prilikom učitavanja sedista:", error);
-      }
-    };
-
-    fetchReservations();
-    fetchUsers();
-    fetchSeats();
-  }, []);
-
   return (
     <div style={containerStyle}>
       {/* Sidebar */}
@@ -112,6 +65,12 @@ const AdminDashboard = () => {
           Korisnici
         </Button>
         <Button
+          style={buttonStyle(activeTab === "office")}
+          onClick={() => setActiveTab("office")}
+        >
+          Izmeni raspored sedenja
+        </Button>
+        <Button
           style={buttonStyle(activeTab === "password")}
           onClick={() => setActiveTab("password")}
         >
@@ -128,27 +87,15 @@ const AdminDashboard = () => {
       {/* Glavni sadržaj */}
       <div style={contentStyle}>
         {activeTab === "home" && <FirstPage user={JSON.parse(localStorage.getItem("user"))}/>}
-        {activeTab === "reservations" && (
-          <AdminReservations 
-            reservations={reservations}
-            setReservations={setReservations}
-            seats={seats}
-            setSeats={setSeats}
-            users={users}
-            setUsers={setUsers}
-          />
-        )}
-        {activeTab === "newUsers" && (
-          <Users
-            users={users}
-            setUsers={setUsers}
-          />
-        )}
+        {activeTab === "reservations" && <AdminReservations />}
+        {activeTab === "newUsers" && <Users />}
+        {activeTab === "office" && <OfficeEditor />}
         {activeTab === "password" && <ChangePassword />}
         {activeTab === "logout" && <Logout activeTab={activeTab} setActiveTab={setActiveTab} />}
       </div>
     </div>
   );
-};
+}
+
 
 export default AdminDashboard;

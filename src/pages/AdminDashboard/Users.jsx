@@ -1,8 +1,43 @@
-import React, { useState } from "react";
-import { Table, Button } from "reactstrap";
+import React, { useState, useEffect } from "react";
+import { Table, Button, Spinner } from "reactstrap";
+import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
 import Swal from "sweetalert2";
 
-const Users = ({ users, setUsers }) => {
+const Users = () => {
+  const [users, setUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
+  // Fetch users on mount
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/user", {
+          method: "GET",
+          credentials: "include",
+        });
+        const data = await response.json();
+        setUsers(data.users);
+      } catch (error) {
+        console.error("Greška prilikom učitavanja korisnika:", error);
+      } finally {
+        setLoadingUsers(false);
+      }
+    };
+    fetchUsers();
+  }, []);
+  // PAGINACIJA
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+  const allUsers = [...users];
+  const totalPages = Math.ceil(allUsers.length / itemsPerPage);
+  const paginatedUsers = allUsers.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePageChange = (page) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+  };
   const [loading, setLoading] = useState(false);
 
   const onUserUpdated = async (updatedUser) => {
@@ -117,30 +152,43 @@ const Users = ({ users, setUsers }) => {
   };
 
   const handleDelete = async (userId) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`http://localhost:8000/user/${userId}`, {
-        method: "DELETE",
-      });
+    const result = await Swal.fire({
+      title: 'Da li ste sigurni?',
+      text: 'Ova akcija je nepovratna. Korisnik će biti obrisan.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Obriši',
+      cancelButtonText: 'Odustani',
+      reverseButtons: true,
+    });
+    if (result.isConfirmed) {
+      setLoading(true);
+      try {
+        const response = await fetch(`http://localhost:8000/user/${userId}`, {
+          method: "DELETE",
+        });
 
-      if (response.ok) {
-        onUserDeleted(userId);
-      } else {
+        if (response.ok) {
+          onUserDeleted(userId);
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Greška",
+            text: "Greška pri brisanju korisnika",
+          });
+        }
+      } catch (err) {
+        console.error(err);
         Swal.fire({
           icon: "error",
           title: "Greška",
-          text: "Greška pri brisanju korisnika",
+          text: "Došlo je do problema pri komunikaciji sa serverom",
         });
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error(err);
-      Swal.fire({
-        icon: "error",
-        title: "Greška",
-        text: "Došlo je do problema pri komunikaciji sa serverom",
-      });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -149,79 +197,88 @@ const Users = ({ users, setUsers }) => {
 
   return (
     <div>
-      <h3>Neodobreni korisnici</h3>
-      {unapprovedUsers.length === 0 ? (
-        <p>Svi korisnici su odobreni 🎉</p>
+      <h2 className="mb-4 text-center">Korisnici</h2>
+      {loadingUsers ? (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
+          <Spinner color="primary" style={{ width: 60, height: 60, borderWidth: 6 }} />
+        </div>
       ) : (
-        <Table striped bordered>
-          <thead>
-            <tr>
-              <th>Korisničko ime</th>
-              <th>Uloga</th>
-              <th>Akcije</th>
-            </tr>
-          </thead>
-          <tbody>
-            {unapprovedUsers.map((user) => (
-              <tr key={user._id}>
-                <td>{user.username}</td>
-                <td>{user.role}</td>
-                <td>
-                  <Button
-                    color="success"
-                    size="sm"
-                    className="me-2"
-                    onClick={() => handleApprove(user)}
-                    disabled={loading}
-                  >
-                    Odobri
-                  </Button>
-                  <Button
-                    color="danger"
-                    size="sm"
-                    onClick={() => handleDelete(user._id)}
-                    disabled={loading}
-                  >
-                    Obriši
-                  </Button>
-                </td>
+        <>
+          <Table bordered hover responsive style={{ borderRadius: 16, background: 'white', border: 'none', marginBottom: 0, boxShadow: '0 6px 24px rgba(108,99,255,0.12)' }}>
+            <thead>
+              <tr>
+                <th style={{ background: 'linear-gradient(135deg, #6C63FF 0%, #ACB6E5 100%)', color: '#fff', textAlign: 'center', fontSize: 16, fontWeight: 600 }}>Korisničko ime</th>
+                <th style={{ background: 'linear-gradient(135deg, #6C63FF 0%, #ACB6E5 100%)', color: '#fff', textAlign: 'center', fontSize: 16, fontWeight: 600 }}>Uloga</th>
+                <th style={{ background: 'linear-gradient(135deg, #6C63FF 0%, #ACB6E5 100%)', color: '#fff', textAlign: 'center', fontSize: 16, fontWeight: 600 }}>Status</th>
+                <th style={{ background: 'linear-gradient(135deg, #6C63FF 0%, #ACB6E5 100%)', color: '#fff', textAlign: 'center', fontSize: 16, fontWeight: 600 }}>Akcije</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
-      )}
-
-      <h3 className="mt-5">Odobreni korisnici</h3>
-      {approvedUsers.length === 0 ? (
-        <p>Trenutno nema odobrenih korisnika.</p>
-      ) : (
-        <Table striped bordered>
-          <thead>
-            <tr>
-              <th>Korisničko ime</th>
-              <th>Uloga</th>
-              <th>Akcije</th>
-            </tr>
-          </thead>
-          <tbody>
-            {approvedUsers.map((user) => (
-              <tr key={user._id}>
-                <td>{user.username}</td>
-                <td>{user.role}</td>
-                <td>
-                  <Button
-                    color="danger"
-                    size="sm"
-                    onClick={() => handleDelete(user._id)}
-                    disabled={loading}
-                  >
-                    Obriši
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {paginatedUsers.length === 0 ? (
+                <tr>
+                  <td colSpan="4" className="text-center" style={{ fontSize: 18, color: '#888', padding: '32px 0' }}>
+                    Nema korisnika
+                  </td>
+                </tr>
+              ) : (
+                paginatedUsers.map((user) => (
+                  <tr key={user._id} style={{ background: 'rgba(108, 99, 255, 0.07)', borderBottom: '2px solid #e9eafc' }}>
+                    <td style={{ textAlign: 'center', verticalAlign: 'middle', fontSize: 15 }}>{user.username}</td>
+                    <td style={{ textAlign: 'center', verticalAlign: 'middle', fontSize: 15 }}>{user.role}</td>
+                    <td style={{ textAlign: 'center', verticalAlign: 'middle', fontSize: 15 }}>
+                      {user.approved ? (
+                        <span style={{ color: '#2ecc40', fontWeight: 'bold', fontSize: 15, padding: '4px 12px', borderRadius: 8, background: '#eafaf1', boxShadow: '0 1px 4px #b2f7c1' }}>Odobren</span>
+                      ) : (
+                        <span style={{ color: '#FFA500', fontWeight: 'bold', fontSize: 15, padding: '4px 12px', borderRadius: 8, background: '#fffbe6', boxShadow: '0 1px 4px #ffe0a3' }}>Na čekanju</span>
+                      )}
+                    </td>
+                    <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                      {!user.approved && (
+                        <Button
+                          color="success"
+                          size="sm"
+                          className="me-2"
+                          style={{ fontWeight: 600, letterSpacing: 0.5, boxShadow: '0 2px 8px #b2f7c1' }}
+                          onClick={() => handleApprove(user)}
+                          disabled={loading}
+                        >
+                          Odobri
+                        </Button>
+                      )}
+                      <Button
+                        color="danger"
+                        size="sm"
+                        style={{ fontWeight: 600, letterSpacing: 0.5, boxShadow: '0 2px 8px #ffb2b2' }}
+                        onClick={() => handleDelete(user._id)}
+                        disabled={loading}
+                      >
+                        Obriši
+                      </Button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </Table>
+          {/* PAGINACIJA */}
+          {totalPages > 1 && (
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 24 }}>
+              <Pagination size="md">
+                <PaginationItem disabled={currentPage === 1}>
+                  <PaginationLink previous onClick={() => handlePageChange(currentPage - 1)} />
+                </PaginationItem>
+                {[...Array(totalPages)].map((_, idx) => (
+                  <PaginationItem active={currentPage === idx + 1} key={idx}>
+                    <PaginationLink onClick={() => handlePageChange(idx + 1)}>{idx + 1}</PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem disabled={currentPage === totalPages}>
+                  <PaginationLink next onClick={() => handlePageChange(currentPage + 1)} />
+                </PaginationItem>
+              </Pagination>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

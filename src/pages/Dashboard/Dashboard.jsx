@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "reactstrap";
 import Logout from "./Logout";
-import FirstPage from "./FirstPage";
+import FirstPage from "../common/FirstPage";
 import Reservation from "./Reservation";
 import ChangePassword from "../common/ChangePassword";
 const Dashboard = () => {
