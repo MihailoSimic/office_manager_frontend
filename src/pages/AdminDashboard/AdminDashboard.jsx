@@ -3,8 +3,8 @@ import { Button } from "reactstrap";
 import Logout from "../Dashboard/Logout";
 // Ovde importuj komponente za admin sekcije:
 import AdminReservations from "./AdminReservations";
-import FirstPage from "../common/FirstPage";
-import ChangePassword from "../common/ChangePassword";
+import FirstPage from "../components/FirstPage";
+import ChangePassword from "../components/ChangePassword";
 import Users from "./Users";
 import OfficeEditor from "./OfficeEditor";
 

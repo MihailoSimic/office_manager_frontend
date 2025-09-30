@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Row, Col, Input, Button, Alert } from "reactstrap";
 import { useNavigate } from "react-router-dom"; // import navigate
 import globalStyles from "../styles/GlobalStyles";
+import BASE_URL from "../api/baseUrl";
 
 function Register() {
   const [username, setUsername] = useState("");
@@ -15,8 +16,17 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+
     if (username === "" || password === "" || confirmPassword === "") {
       setMessage("Morate popuniti sva polja!");
+      setColor("danger");
+      return;
+    }
+
+    // Provera formata lozinke
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{5,}$/;
+    if (!passwordRegex.test(password)) {
+      setMessage("Lozinka mora imati bar 5 karaktera, jedno veliko slovo, jedan broj i jedan specijalan znak.");
       setColor("danger");
       return;
     }
@@ -28,9 +38,10 @@ function Register() {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/user/register", {
+      const response = await fetch(`${BASE_URL}/user/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ username, password }),
       });
 

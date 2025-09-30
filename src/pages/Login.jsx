@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Row, Col, Input, Button, Alert } from "reactstrap";
 import globalStyles from "../styles/GlobalStyles";
+import BASE_URL from "../api/baseUrl";
 import { useNavigate } from "react-router-dom";
 
-const BACKEND_URL = "http://localhost:8000"; 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -22,12 +22,12 @@ function Login() {
     }
 
     try {
-      const response = await fetch(`${BACKEND_URL}/user/login`, {
+      const response = await fetch(`${BASE_URL}/user/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include", // obavezno za cookie
+        credentials: "include",
         body: JSON.stringify({ username, password }),
       });
 

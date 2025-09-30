@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "reactstrap";
 import Logout from "./Logout";
-import FirstPage from "../common/FirstPage";
+import FirstPage from "../components/FirstPage";
 import Reservation from "./Reservation";
-import ChangePassword from "../common/ChangePassword";
+import ChangePassword from "../components/ChangePassword";
+import BASE_URL from "../../api/baseUrl";
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("home");
   const [seats, setSeats] = useState([]);
@@ -45,7 +46,7 @@ const Dashboard = () => {
   useEffect(() => {
       const fetchSeats = async () => {
         try {
-          const response = await fetch("http://localhost:8000/seat", {
+          const response = await fetch(`${BASE_URL}/seat`, {
             method: "GET",
             credentials: "include" // zbog httpOnly cookie
           });
@@ -57,7 +58,7 @@ const Dashboard = () => {
       };
       const fetchReservations = async () => {
         try {
-          const response = await fetch("http://localhost:8000/reservation", {
+          const response = await fetch(`${BASE_URL}/reservation`, {
             method: "GET",
             credentials: "include" // zbog httpOnly cookie
           });

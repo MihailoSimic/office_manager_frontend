@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Row, Col, Button, Input, Form, FormGroup, Label } from "reactstrap";
 
 import Swal from "sweetalert2";
+import BASE_URL from "../../api/baseUrl";
 
 const OfficeEditor = () => {
   const [seatsGenerated, setSeatsGenerated] = useState(false);
@@ -49,7 +50,7 @@ const OfficeEditor = () => {
       .map(({ id, ...seat }) => seat);
 
     try {
-      const response = await fetch("http://localhost:8000/seat/", {
+      const response = await fetch(`${BASE_URL}/seat/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

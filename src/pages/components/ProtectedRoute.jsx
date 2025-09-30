@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import LoadingScreen from "./LoadingScreen";
+import BASE_URL from "../../api/baseUrl";
 const ProtectedRoute = ({ children, requiredRole }) => {
   const [loading, setLoading] = useState(true);
   const [allowed, setAllowed] = useState(false);
@@ -9,7 +10,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
 
   const checkToken = async () => {
     try {
-      const res = await fetch("http://localhost:8000/user/checkToken", {
+      const res = await fetch(`${BASE_URL}/user/checkToken`, {
         credentials: "include",
       });
       if (!res.ok) return null;
@@ -31,7 +32,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
           setAllowed(true);
         } else {
           // logout na backend-u
-          await fetch("http://localhost:8000/user/logout", {
+          await fetch(`${BASE_URL}/user/logout`, {
             method: "POST",
             credentials: "include",
           });
@@ -50,7 +51,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
       } catch (err) {
         console.error("Greška prilikom validacije tokena:", err);
         try {
-          await fetch("http://localhost:8000/user/logout", {
+          await fetch(`${BASE_URL}/user/logout`, {
             method: "POST",
             credentials: "include",
           });

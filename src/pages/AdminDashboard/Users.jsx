@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Table, Button, Spinner } from "reactstrap";
 import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
 import Swal from "sweetalert2";
+import BASE_URL from "../../api/baseUrl";
+import globalStyles from "../../styles/GlobalStyles";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -10,7 +12,7 @@ const Users = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:8000/user", {
+        const response = await fetch(`${BASE_URL}/user`, {
           method: "GET",
           credentials: "include",
         });
@@ -42,7 +44,7 @@ const Users = () => {
 
   const onUserUpdated = async (updatedUser) => {
     try {
-      const res = await fetch(`http://localhost:8000/user/${updatedUser._id}`, {
+      const res = await fetch(`${BASE_URL}/user/${updatedUser._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedUser),
@@ -84,7 +86,7 @@ const Users = () => {
 
   const onUserDeleted = async (userId) => {
     try {
-      const res = await fetch(`http://localhost:8000/user/${userId}`, {
+      const res = await fetch(`${BASE_URL}/user/${userId}`, {
         method: "DELETE",
       });
 
@@ -124,7 +126,7 @@ const Users = () => {
     setLoading(true);
     try {
       const updatedUser = { ...user, approved: true };
-      const response = await fetch(`http://localhost:8000/user/${user._id}`, {
+      const response = await fetch(`${BASE_URL}/user/${user._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedUser),
@@ -166,7 +168,7 @@ const Users = () => {
     if (result.isConfirmed) {
       setLoading(true);
       try {
-        const response = await fetch(`http://localhost:8000/user/${userId}`, {
+        const response = await fetch(`${BASE_URL}/user/${userId}`, {
           method: "DELETE",
         });
 
@@ -204,13 +206,18 @@ const Users = () => {
         </div>
       ) : (
         <>
-          <Table bordered hover responsive style={{ borderRadius: 16, background: 'white', border: 'none', marginBottom: 0, boxShadow: '0 6px 24px rgba(108,99,255,0.12)' }}>
+          <Table
+            bordered
+            hover
+            responsive
+            style={globalStyles.tableStyle}
+          >
             <thead>
               <tr>
-                <th style={{ background: 'linear-gradient(135deg, #6C63FF 0%, #ACB6E5 100%)', color: '#fff', textAlign: 'center', fontSize: 16, fontWeight: 600 }}>Korisničko ime</th>
-                <th style={{ background: 'linear-gradient(135deg, #6C63FF 0%, #ACB6E5 100%)', color: '#fff', textAlign: 'center', fontSize: 16, fontWeight: 600 }}>Uloga</th>
-                <th style={{ background: 'linear-gradient(135deg, #6C63FF 0%, #ACB6E5 100%)', color: '#fff', textAlign: 'center', fontSize: 16, fontWeight: 600 }}>Status</th>
-                <th style={{ background: 'linear-gradient(135deg, #6C63FF 0%, #ACB6E5 100%)', color: '#fff', textAlign: 'center', fontSize: 16, fontWeight: 600 }}>Akcije</th>
+                <th style={globalStyles.tableHeader}>Korisničko ime</th>
+                <th style={globalStyles.tableHeader}>Uloga</th>
+                <th style={globalStyles.tableHeader}>Status</th>
+                <th style={globalStyles.tableHeader}>Akcije</th>
               </tr>
             </thead>
             <tbody>
@@ -222,17 +229,29 @@ const Users = () => {
                 </tr>
               ) : (
                 paginatedUsers.map((user) => (
-                  <tr key={user._id} style={{ background: 'rgba(108, 99, 255, 0.07)', borderBottom: '2px solid #e9eafc' }}>
-                    <td style={{ textAlign: 'center', verticalAlign: 'middle', fontSize: 15 }}>{user.username}</td>
-                    <td style={{ textAlign: 'center', verticalAlign: 'middle', fontSize: 15 }}>{user.role}</td>
-                    <td style={{ textAlign: 'center', verticalAlign: 'middle', fontSize: 15 }}>
+                  <tr
+                    key={user._id}
+                    style={{
+                      transition: 'background 0.2s',
+                      borderRadius: currentPage === 1 && paginatedUsers[0]._id === user._id
+                        ? '18px 18px 0 0'
+                        : currentPage === totalPages && paginatedUsers[paginatedUsers.length - 1]._id === user._id
+                        ? '0 0 18px 18px'
+                        : 0,
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = '#e1bee7')}
+                    onMouseLeave={e => (e.currentTarget.style.background = '')}
+                  >
+                    <td style={{ ...globalStyles.tableCell }}>{user.username}</td>
+                    <td style={{ ...globalStyles.tableCell }}>{user.role}</td>
+                    <td style={{ ...globalStyles.tableCell }}>
                       {user.approved ? (
                         <span style={{ color: '#2ecc40', fontWeight: 'bold', fontSize: 15, padding: '4px 12px', borderRadius: 8, background: '#eafaf1', boxShadow: '0 1px 4px #b2f7c1' }}>Odobren</span>
                       ) : (
                         <span style={{ color: '#FFA500', fontWeight: 'bold', fontSize: 15, padding: '4px 12px', borderRadius: 8, background: '#fffbe6', boxShadow: '0 1px 4px #ffe0a3' }}>Na čekanju</span>
                       )}
                     </td>
-                    <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                    <td style={{ ...globalStyles.tableCell }}>
                       {!user.approved && (
                         <Button
                           color="success"

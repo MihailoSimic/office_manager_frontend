@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import Flatpickr from "react-flatpickr";
 import format from "date-fns/format";
+import BASE_URL from "../../api/baseUrl";
 import "flatpickr/dist/themes/material_blue.css";
 
 import Swal from "sweetalert2";
@@ -38,7 +39,7 @@ function Reservation({ seats, reservations, setReservations }) {
     if (!selectedSeat || !selectedDate) return;
 
     try {
-      const response = await fetch("http://localhost:8000/reservation/create", {
+      const response = await fetch(`${BASE_URL}/reservation/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -61,7 +62,7 @@ function Reservation({ seats, reservations, setReservations }) {
           timer: 3000,
         });
         // refresh rezervacija
-        const res = await fetch("http://localhost:8000/reservation", {
+        const res = await fetch(`${BASE_URL}/reservation`, {
           credentials: "include",
         });
         setReservations(await res.json());

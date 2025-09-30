@@ -4,6 +4,8 @@ import { Table, Button, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter } f
 import Swal from "sweetalert2";
 import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
 import format from "date-fns/format";
+import BASE_URL from "../../api/baseUrl";
+import globalStyles from "../../styles/GlobalStyles";
 import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/material_blue.css";
 
@@ -11,27 +13,6 @@ const AdminReservations = () => {
   const [reservations, setReservations] = useState([]);
   const [seats, setSeats] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const tableStyle = {
-    borderRadius: 8,
-    overflow: "hidden",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-  };
-
-  const headerStyle = {
-    background: "linear-gradient(135deg, #6C63FF 0%, #ACB6E5 100%)",
-    color: "#fff",
-    textAlign: "center",
-  };
-
-  const cellStyle = {
-    textAlign: "center",
-    verticalAlign: "middle",
-  };
-
-  const rowStyle = {
-    background: "rgba(108, 99, 255, 0.1)", // blaga ljubičasto-plava nijansa
-  };
 
   const handleSeatClick = (seat) => {
     const reservation = reservations.find(
@@ -47,14 +28,14 @@ const AdminReservations = () => {
       setSelectedReservation(null);
       setModalOpen(true);
     }
-  };
-  // Fetch reservations and seats on mount
+  }
+
   useEffect(() => {
     const fetchAll = async () => {
       try {
         const [resRes, seatsRes] = await Promise.all([
-          fetch("http://localhost:8000/reservation", { method: "GET", credentials: "include" }),
-          fetch("http://localhost:8000/seat", { method: "GET", credentials: "include" })
+          fetch(`${BASE_URL}/reservation`, { method: "GET", credentials: "include" }),
+          fetch(`${BASE_URL}/seat`, { method: "GET", credentials: "include" })
         ]);
         const reservationsData = await resRes.json();
         const seatsData = await seatsRes.json();
@@ -77,14 +58,6 @@ const AdminReservations = () => {
     acc[seat.row].push(seat);
     return acc;
   }, {});
-  const isSeatReserved = (seatNumber) => {
-      return reservations.some(
-        (r) =>
-          r.seat_number === seatNumber &&
-          r.date === format(selectedDate, "yyyy-MM-dd") &&
-          r.status === "approved"
-      );
-    }
 
   // Sortiraj rezervacije po datumu opadajuće
   const sortedReservations = [...reservations].sort((a, b) => {
@@ -119,14 +92,14 @@ const AdminReservations = () => {
         </div>
       ) : (
         <>
-          <Table bordered hover responsive style={{ borderRadius: 8, background: 'white', border: 'none', marginBottom: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+          <Table bordered hover responsive style={globalStyles.tableStyle}>
             <thead>
               <tr>
-                <th style={{ background: 'linear-gradient(135deg, #6C63FF 0%, #ACB6E5 100%)', color: '#fff', textAlign: 'center', fontSize: 16, fontWeight: 600 }}>Korisnik</th>
-                <th style={{ background: 'linear-gradient(135deg, #6C63FF 0%, #ACB6E5 100%)', color: '#fff', textAlign: 'center', fontSize: 16, fontWeight: 600 }}>Datum</th>
-                <th style={{ background: 'linear-gradient(135deg, #6C63FF 0%, #ACB6E5 100%)', color: '#fff', textAlign: 'center', fontSize: 16, fontWeight: 600 }}>Mesto</th>
-                <th style={{ background: 'linear-gradient(135deg, #6C63FF 0%, #ACB6E5 100%)', color: '#fff', textAlign: 'center', fontSize: 16, fontWeight: 600 }}>Status</th>
-                <th style={{ background: 'linear-gradient(135deg, #6C63FF 0%, #ACB6E5 100%)', color: '#fff', textAlign: 'center', fontSize: 16, fontWeight: 600 }}>Akcija</th>
+                <th style={globalStyles.tableHeader}>Korisnik</th>
+                <th style={globalStyles.tableHeader}>Datum</th>
+                <th style={globalStyles.tableHeader}>Mesto</th>
+                <th style={globalStyles.tableHeader}>Status</th>
+                <th style={globalStyles.tableHeader}>Akcije</th>
               </tr>
             </thead>
             <tbody>
@@ -138,11 +111,11 @@ const AdminReservations = () => {
                 </tr>
               ) : (
                 paginatedReservations.map((res) => (
-                  <tr key={res._id} style={{ background: 'rgba(108, 99, 255, 0.1)', borderBottom: '2px solid #e9eafc' }}>
-                    <td style={{ textAlign: 'center', verticalAlign: 'middle', fontSize: 15 }}>{res.username}</td>
-                    <td style={{ textAlign: 'center', verticalAlign: 'middle', fontSize: 15 }}>{res.date}</td>
-                    <td style={{ textAlign: 'center', verticalAlign: 'middle', fontSize: 15 }}>{res.seat_number}</td>
-                    <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                  <tr key={res._id}>
+                    <td style={globalStyles.tableCell}>{res.username}</td>
+                    <td style={globalStyles.tableCell}>{res.date}</td>
+                    <td style={globalStyles.tableCell}>{res.seat_number}</td>
+                    <td style={globalStyles.tableCell}>
                       {res.status === "pending" && (
                         <span style={{ color: "#FFA500", fontWeight: "bold", fontSize: 15, padding: '4px 12px', borderRadius: 8, background: '#fffbe6', boxShadow: '0 1px 4px #ffe0a3' }}>
                           Na čekanju
@@ -159,7 +132,7 @@ const AdminReservations = () => {
                         </span>
                       )}
                     </td>
-                    <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                    <td style={globalStyles.tableCell}>
                       {res.status === "pending" ? (
                         <>
                           <Button
@@ -216,7 +189,7 @@ const AdminReservations = () => {
           data-enable-time={false}
           value={selectedDate}
           onChange={(date) => setSelectedDate(date[0])}
-          options={{ dateFormat: "d.m.Y", minDate: "today" }}
+          options={{ dateFormat: "d.m.Y" }}
         />
       </div>
       <div>
