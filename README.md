@@ -1,18 +1,33 @@
-# React + Vite
+# Office Manager Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Pokretanje lokalno
 
-Currently, two official plugins are available:
+1. Instaliraj Node.js 20+ i npm.  
+2. Instaliraj zavisnosti:
+   ```bash
+   npm install
+   ```
+3. Pokreni aplikaciju:
+   ```bash
+   npm start
+   ```
+   ili, ako je Angular:
+   ```bash
+   ng serve --open
+   ```
+   Frontend će biti dostupan na [http://localhost:4200](http://localhost:4200).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+⚠️ Backend mora biti pokrenut (lokalno ili u Docker-u) i dostupan na `http://localhost:8000`.  
+Ako se URL razlikuje, promeni ga u konfiguraciji frontend aplikacije (obično u `environment.ts` ili `.env` fajlu).
 
-## React Compiler
+---
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+## Pokretanje sa Docker-om
 
-Note: This will impact Vite dev & build performances.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. U root folderu projekta nalazi se `docker-compose.yml`.  
+2. Pokreni:
+   ```bash
+   docker compose up --build
+   ```
+3. Frontend će biti dostupan na [http://localhost:3000](http://localhost:3000).  
+   Automatski je povezan sa backend servisom iz docker-compose mreže.
