@@ -12,14 +12,12 @@ function Reservation({ seats, reservations, setReservations }) {
   const [selectedSeat, setSelectedSeat] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  // Grupisanje sedišta po redovima
   const groupedSeats = seats.reduce((acc, seat) => {
     if (!acc[seat.row]) acc[seat.row] = [];
     acc[seat.row].push(seat);
     return acc;
   }, {});
 
-  // Provera da li je sedište već rezervisano za odabrani datum
   const isSeatReserved = (seatNumber) => {
     return reservations.some(
       (r) =>
@@ -30,7 +28,7 @@ function Reservation({ seats, reservations, setReservations }) {
   };
 
   const handleSeatClick = (seat) => {
-    if (isSeatReserved(seat.seat_number)) return; // ne otvara modal za zauzeta mesta
+    if (isSeatReserved(seat.seat_number)) return;
     setSelectedSeat(seat);
     setModalOpen(true);
   };
@@ -47,8 +45,8 @@ function Reservation({ seats, reservations, setReservations }) {
           seat_number: selectedSeat.seat_number,
           date: format(selectedDate, "yyyy-MM-dd"),
           username: JSON.parse(localStorage.getItem("user")).username,
-          status: "pending",
-        }),
+          status: "pending"
+        })
       });
 
       const data = await response.json();
@@ -59,7 +57,7 @@ function Reservation({ seats, reservations, setReservations }) {
           icon: "success",
           title: "Rezervacija poslata!",
           showConfirmButton: false,
-          timer: 3000,
+          timer: 3000
         });
         // refresh rezervacija
         const res = await fetch(`${BASE_URL}/reservation`, {
@@ -73,7 +71,7 @@ function Reservation({ seats, reservations, setReservations }) {
           icon: "error",
           title: data.detail || "Greška prilikom rezervacije",
           showConfirmButton: false,
-          timer: 3000,
+          timer: 3000
         });
       }
     } catch (error) {
@@ -84,7 +82,7 @@ function Reservation({ seats, reservations, setReservations }) {
         icon: "error",
         title: "Greška prilikom rezervacije",
         showConfirmButton: false,
-        timer: 3000,
+        timer: 3000
       });
     }
 
@@ -128,7 +126,6 @@ function Reservation({ seats, reservations, setReservations }) {
         </Row>
       ))}
 
-      {/* Modal za potvrdu rezervacije */}
       <Modal isOpen={modalOpen} toggle={() => setModalOpen(!modalOpen)}>
         <ModalHeader toggle={() => setModalOpen(false)}>
           Rezervacija sedišta {selectedSeat?.seat_number}

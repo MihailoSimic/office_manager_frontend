@@ -10,7 +10,6 @@ const OfficeEditor = () => {
   const [cols, setCols] = useState(0);
   const [groupedSeats, setGroupedSeats] = useState({});
 
-  // Generiši sedišta
   const generateSeats = () => {
     let seatNumber = 1;
     const grouped = {};
@@ -31,7 +30,6 @@ const OfficeEditor = () => {
     setSeatsGenerated(true);
   };
 
-  // Uključi/isključi sedište
   const toggleSeat = (row, id) => {
     setGroupedSeats((prev) => {
       const newSeats = { ...prev };
@@ -42,7 +40,6 @@ const OfficeEditor = () => {
     });
   };
 
-  // Sačuvaj raspored
   const handleSubmit = async (e) => {
     e.preventDefault();
     const allSeats = Object.values(groupedSeats)
@@ -65,7 +62,7 @@ const OfficeEditor = () => {
           icon: "success",
           title: "Raspored uspešno sačuvan!",
           showConfirmButton: false,
-          timer: 3000,
+          timer: 3000
         });
       } else {
         const data = await response.json();
@@ -75,7 +72,7 @@ const OfficeEditor = () => {
           icon: "error",
           title: data.detail || "Greška pri čuvanju rasporeda!",
           showConfirmButton: false,
-          timer: 3000,
+          timer: 3000
         });
       }
     } catch (error) {
@@ -85,7 +82,7 @@ const OfficeEditor = () => {
         icon: "error",
         title: "Greška pri komunikaciji sa serverom!",
         showConfirmButton: false,
-        timer: 3000,
+        timer: 3000
       });
     }
   };
@@ -94,7 +91,6 @@ const OfficeEditor = () => {
     <div className="p-4">
       <h3>Generiši novi raspored sedenja</h3>
       <Form onSubmit={handleSubmit} className="mb-4">
-        {/* Prvi red - inputi */}
         <Row className="mb-1 ms-1">
           <Col xs="auto">
             <FormGroup className="d-flex align-items-center">
@@ -124,7 +120,6 @@ const OfficeEditor = () => {
           </Col>
         </Row>
 
-        {/* Drugi red - dugmad */}
         <Row className="ms-4">
           <Col xs="auto">
             {!seatsGenerated ? (
@@ -153,7 +148,6 @@ const OfficeEditor = () => {
         </Row>
       </Form>
 
-      {/* Prikaz sedišta */}
       {Object.keys(groupedSeats).length > 0 && (
         <div className="mb-2 text-center">
           Klikom na dugme brišeš mesto iz rasporeda (mesto postaje sivo i neće biti dostupno za rezervaciju).

@@ -9,7 +9,7 @@ function FirstPage({ user }) {
         <Col xs="10">
           <Card 
             style={{ 
-              backgroundColor: "rgba(255, 255, 255, 0.1)", // polu-transparentno
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
               border: "none", 
               backdropFilter: "blur(8px)", 
               padding: "20px",

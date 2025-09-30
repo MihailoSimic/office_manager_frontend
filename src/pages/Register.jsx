@@ -11,7 +11,7 @@ function Register() {
   const [message, setMessage] = useState("");
   const [color, setColor] = useState("success");
 
-  const navigate = useNavigate(); // hook za navigaciju
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,7 +23,6 @@ function Register() {
       return;
     }
 
-    // Provera formata lozinke
     const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{5,}$/;
     if (!passwordRegex.test(password)) {
       setMessage("Lozinka mora imati bar 5 karaktera, jedno veliko slovo, jedan broj i jedan specijalan znak.");
@@ -55,9 +54,8 @@ function Register() {
         localStorage.setItem("user", JSON.stringify(data.user));
         setColor("success");
 
-        // kratko čekanje pa preusmeravanje
         setTimeout(() => {
-          navigate("/dashboard"); // preusmeravanje na dashboard
+          navigate("/dashboard");
         }, 1000);
       }
     } catch (error) {

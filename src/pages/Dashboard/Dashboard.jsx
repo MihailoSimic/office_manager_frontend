@@ -5,23 +5,12 @@ import FirstPage from "../components/FirstPage";
 import Reservation from "./Reservation";
 import ChangePassword from "../components/ChangePassword";
 import BASE_URL from "../../api/baseUrl";
+import globalStyles from "../../styles/GlobalStyles";
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("home");
   const [seats, setSeats] = useState([]);
   const [reservations, setReservations] = useState([]);
   const user = JSON.parse(localStorage.getItem("user"));
-
-  const sidebarStyle = {
-    width: "20%",
-    background: "rgba(0, 0, 0, 0.4)", // tamniji, proziran
-    color: "#fff",
-    padding: "20px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "15px",
-    borderRadius: "12px",
-    backdropFilter: "blur(10px)",
-  };
 
   const buttonStyle = (isActive) => ({
     backgroundColor: isActive ? "#6C63FF" : "rgba(255, 255, 255, 0.3)",
@@ -36,19 +25,14 @@ const Dashboard = () => {
     display: "flex",
     minHeight: "100vh",
     background: "linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%)",
-  };
+  }
 
-  const contentStyle = {
-    flex: 1,
-    padding: "30px",
-    color: "#333",
-  };
   useEffect(() => {
       const fetchSeats = async () => {
         try {
           const response = await fetch(`${BASE_URL}/seat`, {
             method: "GET",
-            credentials: "include" // zbog httpOnly cookie
+            credentials: "include"
           });
           const data = await response.json();
           setSeats(data);
@@ -60,7 +44,7 @@ const Dashboard = () => {
         try {
           const response = await fetch(`${BASE_URL}/reservation`, {
             method: "GET",
-            credentials: "include" // zbog httpOnly cookie
+            credentials: "include"
           });
           const data = await response.json();
           setReservations(data);
@@ -75,8 +59,8 @@ const Dashboard = () => {
 
   return (
     <div style={containerStyle}>
-      {/* Sidebar */}
-      <div style={sidebarStyle}>
+
+      <div style={globalStyles.sidebar}>
         <h3>Office Manager</h3>
         <Button style={buttonStyle(activeTab === "home")} onClick={() => setActiveTab("home")}>
           Početna strana
@@ -92,8 +76,7 @@ const Dashboard = () => {
         </Button>
       </div>
 
-      {/* Glavni sadržaj */}
-      <div style={contentStyle}>
+      <div style={globalStyles.content}>
         {activeTab === "home" && <FirstPage user={JSON.parse(localStorage.getItem("user"))}/>}
         {activeTab === "reserve" && (
           <Reservation 

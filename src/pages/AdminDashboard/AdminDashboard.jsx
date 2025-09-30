@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "reactstrap";
+
 import Logout from "../Dashboard/Logout";
-// Ovde importuj komponente za admin sekcije:
 import AdminReservations from "./AdminReservations";
-import FirstPage from "../components/FirstPage";
-import ChangePassword from "../components/ChangePassword";
 import Users from "./Users";
 import OfficeEditor from "./OfficeEditor";
+
+import FirstPage from "../components/FirstPage";
+import ChangePassword from "../components/ChangePassword";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("reservations")
@@ -46,7 +47,6 @@ const AdminDashboard = () => {
 
   return (
     <div style={containerStyle}>
-      {/* Sidebar */}
       <div style={sidebarStyle}>
         <h3>Admin Panel</h3>
         <Button style={buttonStyle(activeTab === "home")} onClick={() => setActiveTab("home")}>
@@ -84,7 +84,6 @@ const AdminDashboard = () => {
         </Button>
       </div>
 
-      {/* Glavni sadržaj */}
       <div style={contentStyle}>
         {activeTab === "home" && <FirstPage user={JSON.parse(localStorage.getItem("user"))}/>}
         {activeTab === "reservations" && <AdminReservations />}

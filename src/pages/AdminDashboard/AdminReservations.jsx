@@ -30,6 +30,49 @@ const AdminReservations = () => {
     }
   }
 
+  const handleReservationSubmit = async (reservationId, status) => {
+    try {
+      const res = await fetch(`${BASE_URL}/reservation/${reservationId}?status=${status}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ status: "rejected", reservation_id: reservationId })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "success",
+          title: data.message || "Rezervacija ažurirana!",
+          showConfirmButton: false,
+          timer: 3000
+        });
+
+        const refreshed = await fetch(`${BASE_URL}/reservation`, { credentials: "include" });
+        setReservations(await refreshed.json());
+      } else {
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "error",
+          title: data.detail || "Greška pri ažuriranju rezervacije.",
+          showConfirmButton: false,
+          timer: 3000
+        });
+      }
+    } catch (err) {
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: "Greška u komunikaciji sa serverom!",
+        showConfirmButton: false,
+        timer: 3000
+      });
+    }
+  };
+
   useEffect(() => {
     const fetchAll = async () => {
       try {
@@ -59,7 +102,6 @@ const AdminReservations = () => {
     return acc;
   }, {});
 
-  // Sortiraj rezervacije po datumu opadajuće
   const sortedReservations = [...reservations].sort((a, b) => {
     const parseDate = (d) => {
       if (!d) return 0;
@@ -70,7 +112,6 @@ const AdminReservations = () => {
     return parseDate(b.date) - parseDate(a.date);
   });
 
-  // PAGINACIJA
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const totalPages = Math.ceil(sortedReservations.length / itemsPerPage);
@@ -140,7 +181,7 @@ const AdminReservations = () => {
                             size="sm"
                             className="me-2"
                             style={{ fontWeight: 600, letterSpacing: 0.5, boxShadow: '0 2px 8px #b2f7c1' }}
-                            onClick={() => handleApprove(res._id)}
+                            onClick={() => handleReservationSubmit(res._id, "approved")}
                           >
                             Odobri
                           </Button>
@@ -148,7 +189,7 @@ const AdminReservations = () => {
                             color="danger"
                             size="sm"
                             style={{ fontWeight: 600, letterSpacing: 0.5, boxShadow: '0 2px 8px #ffb2b2' }}
-                            onClick={() => handleReject(res._id)}
+                            onClick={() => handleReservationSubmit(res._id, "rejected")}
                           >
                             Odbij
                           </Button>
@@ -162,7 +203,6 @@ const AdminReservations = () => {
               )}
             </tbody>
           </Table>
-          {/* PAGINACIJA */}
           {totalPages > 1 && (
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: 24 }}>
               <Pagination size="md">
@@ -182,7 +222,6 @@ const AdminReservations = () => {
           )}
         </>
       )}
-      {/* Raspored sedenja i modal */}
       <h2 className="mb-4 text-center">Raspored sedenja</h2>
       <div style={{ marginBottom: "20px", textAlign: "center" }}>
         <Flatpickr

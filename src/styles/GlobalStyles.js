@@ -20,19 +20,19 @@ const globalStyles = {
   title: {
     fontSize: "clamp(2rem, 5vw, 3rem)",
     marginBottom: "10px",
-    color: "#333",
+    color: "#333"
   },
   subtitle: {
     fontSize: "clamp(1rem, 3vw, 1.3rem)",
     marginBottom: "30px",
-    color: "#444",
+    color: "#444"
   },
   buttons: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
     gap: "20px",
-    flexWrap: "wrap",
+    flexWrap: "wrap"
   },
   button: {
     padding: "12px 28px",
@@ -43,7 +43,7 @@ const globalStyles = {
     transition: "0.3s",
     fontSize: "1rem",
     minWidth: "120px",
-    textAlign: "center",
+    textAlign: "center"
   },
   tableStyle: {
     borderRadius: 18,
@@ -59,7 +59,7 @@ const globalStyles = {
     textAlign: 'center',
     fontSize: 16,
     fontWeight: 600,
-    border: 'none',
+    border: 'none'
   },
   tableCell: {
     background: '#e0f7fa',
@@ -68,8 +68,24 @@ const globalStyles = {
     fontSize: 15,
     border: 'none',
     borderBottom: '1.5px solid #b2dfdb',
-  padding: '8px 8px',
+    padding: '8px 8px'
   },
+  sidebar: {
+    width: "20%",
+    background: "rgba(0, 0, 0, 0.4)",
+    color: "#fff",
+    padding: "20px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "15px",
+    borderRadius: "12px",
+    backdropFilter: "blur(10px)"
+  },
+  content: {
+    flex: 1,
+    padding: "30px",
+    color: "#333",
+  }
 };
 
 export default globalStyles;

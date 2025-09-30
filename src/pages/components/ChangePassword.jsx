@@ -1,77 +1,129 @@
-import React, { useState } from "react";
-import { Button, Form, FormGroup, Label, Input, Container, Alert } from "reactstrap";
 
-const ChangePassword = (user, setUser) => {
+import React, { useState } from "react";
+import { Button, Form, FormGroup, Label, Input, Container } from "reactstrap";
+import Swal from "sweetalert2";
+import bcrypt from "bcryptjs";
+
+const ChangePassword = () => {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const [color, setColor] = useState("success"); // boja poruke: success/error
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validacija: nove lozinke moraju biti iste
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{5,}$/;
+    if (!passwordRegex.test(newPassword)) {
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: "Lozinka mora imati bar 5 karaktera, jedno veliko slovo, jedan broj i jedan specijalan znak.",
+        showConfirmButton: false,
+        timer: 3000
+      });
+      return;
+    }
+
     if (newPassword !== confirmPassword) {
-      setColor("danger");
-      setMessage("Nova lozinka i potvrda lozinke se ne poklapaju!");
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: "Nova lozinka i potvrda lozinke se ne poklapaju!",
+        showConfirmButton: false,
+        timer: 3000
+      });
       return;
     }
 
     try {
-      // Uzmi user-a iz localStorage
       const storedUser = JSON.parse(localStorage.getItem("user"));
 
       if (!storedUser) {
-        setColor("danger");
-        setMessage("Niste prijavljeni!");
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "error",
+          title: "Morate biti prijavljeni da biste promenili lozinku!",
+          showConfirmButton: false,
+          timer: 3000
+        });
         return;
       }
 
-      // Napravi payload sa novom lozinkom
+      const hashedPassword = storedUser.password;
+      const oldPasswordMatch = await bcrypt.compare(oldPassword, hashedPassword);
+      if (!oldPasswordMatch) {
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "error",
+          title: "Stara lozinka nije ispravna!",
+          showConfirmButton: false,
+          timer: 3000
+        });
+        return;
+      }
+
       const updatedUser = {
         ...storedUser,
         password: newPassword,
       };
 
-      // Pošalji PUT na backend sa ID-em u URL-u
       const response = await fetch(
         `http://localhost:8000/user/${storedUser._id}`,
         {
           method: "PUT",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(updatedUser),
+          body: JSON.stringify(updatedUser)
         }
       );
 
       const data = await response.json();
 
       if (response.ok) {
-        setColor("success");
-        setMessage(data.message || "Lozinka uspešno promenjena!");
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "success",
+          title: data.message || "Lozinka uspešno promenjena!",
+          showConfirmButton: false,
+          timer: 3000
+        });
 
-        // Osveži localStorage sa novim podacima
-        localStorage.setItem("user", JSON.stringify(updatedUser));
+        localStorage.setItem("user", JSON.stringify(data.user));
 
-        // Resetuj polja
         setOldPassword("");
         setNewPassword("");
         setConfirmPassword("");
       } else {
-        setColor("danger");
-        setMessage(data.detail || "Došlo je do greške.");
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "error",
+          title: data.detail || "Došlo je do greške.",
+          showConfirmButton: false,
+          timer: 3000
+        });
       }
     } catch (err) {
       console.error(err);
-      setColor("danger");
-      setMessage("Greška u komunikaciji sa serverom!");
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: "Greška u komunikaciji sa serverom!",
+        showConfirmButton: false,
+        timer: 3000
+      });
     }
   };
 
   return (
     <Container style={{ maxWidth: "400px", marginTop: "50px" }}>
       <h2 className="mb-4">Promena lozinke</h2>
-      {message && <Alert color={color}>{message}</Alert>}
       <Form onSubmit={handleSubmit}>
         <FormGroup>
           <Label for="oldPassword">Stara lozinka:</Label>

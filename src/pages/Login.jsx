@@ -37,16 +37,11 @@ function Login() {
         setMessage(data.detail || "Došlo je do greške");
         setColor("danger");
       } else {
-        // Sačuvaj token u localStorage
-        console.log(data)
         localStorage.setItem("user", JSON.stringify(data.user));
-
         setMessage(`Uspešno prijavljen! Dobrodošao ${data.user?.username}`);
         setColor("success");
 
-        // Navigacija na Dashboard nakon kratkog delay-a
         setTimeout(() => {
-          console.log(data.user.role)
           if (data.user.role === "admin") {
             navigate("/admin-dashboard");
           } else {

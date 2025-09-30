@@ -31,13 +31,11 @@ const ProtectedRoute = ({ children, requiredRole }) => {
         if (result && (!requiredRole || result.role === requiredRole)) {
           setAllowed(true);
         } else {
-          // logout na backend-u
           await fetch(`${BASE_URL}/user/logout`, {
             method: "POST",
             credentials: "include",
           });
 
-          // prikaži swal poruku
           await Swal.fire({
             icon: "error",
             title: "Nedozvoljen pristup",
@@ -45,7 +43,6 @@ const ProtectedRoute = ({ children, requiredRole }) => {
             confirmButtonText: "U redu",
           });
 
-          // tek nakon što korisnik zatvori alert → preusmeri
           navigate("/login");
         }
       } catch (err) {
@@ -63,7 +60,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
           icon: "error",
           title: "Greška",
           text: "Došlo je do problema prilikom provere pristupa.",
-          confirmButtonText: "U redu",
+          confirmButtonText: "U redu"
         });
 
         navigate("/login");

@@ -8,25 +8,6 @@ import globalStyles from "../../styles/GlobalStyles";
 const Users = () => {
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
-  // Fetch users on mount
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch(`${BASE_URL}/user`, {
-          method: "GET",
-          credentials: "include",
-        });
-        const data = await response.json();
-        setUsers(data.users);
-      } catch (error) {
-        console.error("Greška prilikom učitavanja korisnika:", error);
-      } finally {
-        setLoadingUsers(false);
-      }
-    };
-    fetchUsers();
-  }, []);
-  // PAGINACIJA
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const allUsers = [...users];
@@ -88,6 +69,7 @@ const Users = () => {
     try {
       const res = await fetch(`${BASE_URL}/user/${userId}`, {
         method: "DELETE",
+        credentials: "include"
       });
 
       if (res.ok) {
@@ -193,9 +175,24 @@ const Users = () => {
       }
     }
   };
-
-  const unapprovedUsers = users?.filter((u) => !u.approved) || [];
-  const approvedUsers = users?.filter((u) => u.approved) || [];
+  
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/user`, {
+          method: "GET",
+          credentials: "include",
+        });
+        const data = await response.json();
+        setUsers(data.users);
+      } catch (error) {
+        console.error("Greška prilikom učitavanja korisnika:", error);
+      } finally {
+        setLoadingUsers(false);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   return (
     <div>

@@ -10,14 +10,12 @@ function Logout({ activeTab, setActiveTab }) {
   try {
     await fetch("http://localhost:8000/user/logout", {
       method: "POST",
-      credentials: "include" // BITNO da šalje HttpOnly cookie
+      credentials: "include"
     });
 
-    // Opcionalno briši localStorage
     localStorage.removeItem("user");
-
-    // Preusmeri korisnika
     navigate("/login");
+    
   } catch (err) {
     console.error("Logout nije uspeo", err);
   }

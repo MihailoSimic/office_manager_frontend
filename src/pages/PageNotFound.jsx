@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Button } from "reactstrap";
+import { Button } from "reactstrap";
 import { useNavigate } from "react-router-dom";
 import globalStyles from "../styles/GlobalStyles";
 const PageNotFound = () => {
