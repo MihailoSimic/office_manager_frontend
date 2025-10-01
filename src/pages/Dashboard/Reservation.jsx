@@ -1,16 +1,25 @@
-import React, { useState } from "react";
-import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import React, { useState, useEffect } from "react";
+import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Spinner } from "reactstrap";
 import Flatpickr from "react-flatpickr";
 import format from "date-fns/format";
+import { useNavigate } from "react-router-dom";
 import BASE_URL from "../../api/baseUrl";
-import "flatpickr/dist/themes/material_blue.css";
-
+import TokenExpiredSwal from "../utils/TokenExpiredSwal";
+import StyledSpinner from "../utils/StyledSpinner";
 import Swal from "sweetalert2";
 
-function Reservation({ seats, reservations, setReservations }) {
+import "flatpickr/dist/themes/material_blue.css";
+
+function Reservation() {
+
+  const [seats, setSeats] = useState([]);
+  const [reservations, setReservations] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedSeat, setSelectedSeat] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
 
   const groupedSeats = seats.reduce((acc, seat) => {
     if (!acc[seat.row]) acc[seat.row] = [];
@@ -50,6 +59,12 @@ function Reservation({ seats, reservations, setReservations }) {
       });
 
       const data = await response.json();
+
+      if (response.status === 401) {
+        TokenExpiredSwal();
+        navigate("/");
+        return;
+      }
       if (response.ok) {
         Swal.fire({
           toast: true,
@@ -59,11 +74,6 @@ function Reservation({ seats, reservations, setReservations }) {
           showConfirmButton: false,
           timer: 3000
         });
-        // refresh rezervacija
-        const res = await fetch(`${BASE_URL}/reservation`, {
-          credentials: "include",
-        });
-        setReservations(await res.json());
       } else {
         Swal.fire({
           toast: true,
@@ -85,10 +95,35 @@ function Reservation({ seats, reservations, setReservations }) {
         timer: 3000
       });
     }
-
     setModalOpen(false);
   };
 
+  useEffect(() => {
+    const fetchAll = async () => {
+      try {
+        setLoading(true);
+        const [seatsRes, reservationsRes] = await Promise.all([
+          fetch(`${BASE_URL}/seat`, { credentials: "include" }),
+          fetch(`${BASE_URL}/reservation`, { credentials: "include" })
+        ]);
+        if (seatsRes.status === 401 || reservationsRes.status === 401) {
+          TokenExpiredSwal();
+          navigate("/");
+          return;
+        }
+        const seatsData = seatsRes.ok ? await seatsRes.json() : [];
+        const reservationsData = reservationsRes.ok ? await reservationsRes.json() : [];
+        setSeats(seatsData);
+        setReservations(reservationsData);
+        setLoading(false);
+      } catch (err) {
+        console.error("Greška prilikom učitavanja podataka:", err);
+      }
+    };
+    fetchAll();
+  }, []);
+
+  if (loading) return <StyledSpinner />;
   return (
     <div style={{ padding: "20px" }}>
       <h2 className="mb-3 text-center">Rezervacija mesta</h2>

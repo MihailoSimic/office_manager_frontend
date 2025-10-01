@@ -2,12 +2,17 @@ import React, { useEffect, useState } from "react";
 import { Button, Table, Spinner } from "reactstrap";
 import Swal from "sweetalert2";
 import { format } from "date-fns/format";
+import { useNavigate } from "react-router-dom";
+import TokenExpiredSwal from "../utils/TokenExpiredSwal";
 import BASE_URL from "../../api/baseUrl";
 import globalStyles from "../../styles/GlobalStyles";
+import StyledSpinner from "../utils/StyledSpinner";
 const History = () => {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [canceling, setCanceling] = useState("");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchReservations = async () => {
@@ -17,6 +22,11 @@ const History = () => {
           credentials: "include"
         });
         const data = await response.json();
+        if (response.status === 401) {
+          TokenExpiredSwal();
+          navigate("/");
+          return;
+        }
         setReservations(data);
       } catch (error) {
         setReservations([]);
@@ -66,11 +76,7 @@ const History = () => {
     }
   };
 
-  if (loading) return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
-      <Spinner color="primary" style={{ width: 60, height: 60, borderWidth: 6 }} />
-    </div>
-  )
+  if (loading) return <StyledSpinner />;
 
   return (
     <div>

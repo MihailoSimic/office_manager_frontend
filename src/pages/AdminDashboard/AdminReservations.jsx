@@ -8,7 +8,9 @@ import BASE_URL from "../../api/baseUrl";
 import globalStyles from "../../styles/GlobalStyles";
 import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/material_blue.css";
-
+import { useNavigate } from "react-router-dom";
+import TokenExpiredSwal from "../utils/TokenExpiredSwal";
+import StyledSpinner from "../utils/StyledSpinner";
 const AdminReservations = () => {
   const [reservations, setReservations] = useState([]);
   const [seats, setSeats] = useState([]);
@@ -16,6 +18,7 @@ const AdminReservations = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedReservation, setSelectedReservation] = useState(null);
+
   const groupedSeats = seats.reduce((acc, seat) => {
     if (!acc[seat.row]) acc[seat.row] = [];
     acc[seat.row].push(seat);
@@ -40,6 +43,7 @@ const AdminReservations = () => {
     currentPage * itemsPerPage
   );
 
+  const navigate = useNavigate();
   const handleSeatClick = (seat) => {
     const reservation = reservations.find(
       (r) =>
@@ -65,6 +69,11 @@ const AdminReservations = () => {
         body: JSON.stringify({ status: "rejected", reservation_id: reservationId })
       });
       const data = await res.json();
+      if (res.status === 401) {
+        TokenExpiredSwal();
+        navigate("/");
+        return;
+      }
       if (res.ok) {
         Swal.fire({
           toast: true,
@@ -115,6 +124,11 @@ const AdminReservations = () => {
         method: "DELETE",
         credentials: "include"
       });
+      if (res.status === 401) {
+        TokenExpiredSwal();
+        navigate("/");
+        return;
+      }
       const data = await res.json();
       if (res.ok) {
         Swal.fire({
@@ -157,9 +171,22 @@ const AdminReservations = () => {
     const fetchAll = async () => {
       try {
         const [resRes, seatsRes] = await Promise.all([
-          fetch(`${BASE_URL}/reservation`, { method: "GET", credentials: "include" }),
-          fetch(`${BASE_URL}/seat`, { method: "GET", credentials: "include" })
+          fetch(`${BASE_URL}/reservation`,
+            { 
+              method: "GET",
+              credentials: "include" 
+            }
+          ),
+          fetch(
+            `${BASE_URL}/seat`,
+            { method: "GET", credentials: "include" }
+          )
         ]);
+        if (resRes?.status === 401 || seatsRes?.status === 401) {
+          TokenExpiredSwal();
+          navigate("/");
+          return;
+        }
         const reservationsData = await resRes.json();
         const seatsData = await seatsRes.json();
         setReservations(reservationsData);
@@ -177,9 +204,7 @@ const AdminReservations = () => {
     <div>
       <h2 className="mb-4 text-center">Sve rezervacije</h2>
       {loading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
-          <Spinner color="primary" style={{ width: 60, height: 60, borderWidth: 6 }} />
-        </div>
+        <StyledSpinner />
       ) : (
         <>
           <Table bordered hover responsive style={globalStyles.tableStyle}>

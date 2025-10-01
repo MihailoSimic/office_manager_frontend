@@ -85,16 +85,7 @@ const Dashboard = () => {
 
       <div style={globalStyles.content}>
         {activeTab === "home" && <FirstPage user={JSON.parse(localStorage.getItem("user"))}/>}
-        {activeTab === "reserve" && (
-          <Reservation 
-            seats={seats}
-            setSeats={setSeats}
-            reservations={reservations}
-            setReservations={setReservations}>
-              Ovde će ići forma za rezervaciju mesta
-          </Reservation>
-          )
-        }
+        {activeTab === "reserve" && <Reservation />}
         {activeTab === "history" && <History />}
         {activeTab === "password" && <ChangePassword />}
         {activeTab === "logout" && <Logout activeTab={activeTab} setActiveTab={setActiveTab}/>}

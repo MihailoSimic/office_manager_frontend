@@ -2,10 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Table, Button, Spinner } from "reactstrap";
 import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
+
 import BASE_URL from "../../api/baseUrl";
 import globalStyles from "../../styles/GlobalStyles";
-
+import TokenExpiredSwal from "../utils/TokenExpiredSwal";
+import StyledSpinner from "../utils/StyledSpinner";
 const Users = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,12 +31,18 @@ const Users = () => {
     setLoading(true);
     try {
       const updatedUser = { ...user, approved: true };
-          const response = await fetch(`${BASE_URL}/user/${user._id}`, {
-            method: "PUT",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(updatedUser)
-          });
+      const response = await fetch(`${BASE_URL}/user/${user._id}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedUser)
+      });
+      if (response.status === 401) {
+        TokenExpiredSwal();
+        navigate("/");
+        return;
+      }
+      
       if (response.ok) {
         Swal.fire({
           toast: true,
@@ -45,6 +55,11 @@ const Users = () => {
         setUsers(users.map(u => u._id === user._id ? updatedUser : u));
       } else {
         const data = await response.json();
+        if (data.status === 401) {
+          localStorage.removeItem("user");
+          navigate("/");
+          return;
+        }
         Swal.fire({
           icon: "error",
           title: "Greška",
@@ -87,6 +102,11 @@ const Users = () => {
           credentials: "include",
           headers: { "Content-Type": "application/json" }
         });
+        if (response.status === 401) {
+          TokenExpiredSwal();
+          navigate("/");
+          return;
+        }
 
         if (response.ok) {
           Swal.fire({
@@ -123,6 +143,11 @@ const Users = () => {
           method: "GET",
           credentials: "include",
         });
+        if (response.status === 401) {
+          TokenExpiredSwal();
+          navigate("/");
+          return;
+        }
         const data = await response.json();
         setUsers(data.users);
       } catch (error) {
@@ -138,9 +163,7 @@ const Users = () => {
     <div>
       <h2 className="mb-4 text-center">Korisnici</h2>
       {loadingUsers ? (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
-          <Spinner color="primary" style={{ width: 60, height: 60, borderWidth: 6 }} />
-        </div>
+        <StyledSpinner />
       ) : (
         <>
           <Table
