@@ -15,7 +15,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
       });
       if (!res.ok) return null;
 
-      const data = await res.json(); // { username, role, message }
+      const data = await res.json();
       return data;
     } catch (err) {
       console.error(err);
@@ -43,7 +43,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
             confirmButtonText: "U redu",
           });
 
-          navigate("/login");
+          navigate("/");
         }
       } catch (err) {
         console.error("Greška prilikom validacije tokena:", err);

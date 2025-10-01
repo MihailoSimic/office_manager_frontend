@@ -23,104 +23,34 @@ const Users = () => {
   };
   const [loading, setLoading] = useState(false);
 
-  const onUserUpdated = async (updatedUser) => {
-    try {
-      const res = await fetch(`${BASE_URL}/user/${updatedUser._id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedUser),
-      });
-
-      if (res.ok) {
-        setUsers((prev) =>
-          prev.map((u) => (u._id === updatedUser._id ? updatedUser : u))
-        );
-        Swal.fire({
-          toast: true,
-          position: "top-end",
-          icon: "success",
-          title: `Korisnik ${updatedUser.username} je odobren!`,
-          timer: 3000,
-          showConfirmButton: false
-        });
-      } else {
-        console.error("Backend nije uspeo da ažurira korisnika");
-        Swal.fire({
-          toast: true,
-          position: "top-end",
-          icon: "error",
-          title: "Korisnika nije moguće odobriti.",
-          timer: 3000
-        });
-      }
-    } catch (err) {
-      console.error("Greška pri ažuriranju korisnika:", err);
-      Swal.fire({
-        toast: true,
-        position: "top-end",
-        icon: "error",
-        title: "Došlo je do problema pri komunikaciji sa serverom.",
-        timer: 3000
-      });
-    }
-  };
-
-  const onUserDeleted = async (userId) => {
-    try {
-      const res = await fetch(`${BASE_URL}/user/${userId}`, {
-        method: "DELETE",
-        credentials: "include"
-      });
-
-      if (res.ok) {
-        setUsers((prev) => prev.filter((u) => u._id !== userId));
-
-        Swal.fire({
-          toast: true,
-          position: "top-end",
-          icon: "success",
-          title: "Korisnik je uspešno obrisan.",
-          timer: 3000,
-          showConfirmButton: false,
-        });
-      } else {
-        console.error("Backend nije uspeo da obriše korisnika");
-        Swal.fire({
-          toast: true,
-          position: "top-end",
-          icon: "error",
-          title: "Korisnika nije moguće obrisati.",
-        });
-      }
-    } catch (err) {
-      console.error("Greška pri brisanju korisnika:", err);
-      Swal.fire({
-        toast: true,
-        position: "top-end",
-        icon: "error",
-        title: "Došlo je do problema pri komunikaciji sa serverom.",
-        timer: 3000,
-      });
-    }
-  };
-
   const handleApprove = async (user) => {
     setLoading(true);
     try {
       const updatedUser = { ...user, approved: true };
-      const response = await fetch(`${BASE_URL}/user/${user._id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedUser),
-      });
-
+          const response = await fetch(`${BASE_URL}/user/${user._id}`, {
+            method: "PUT",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updatedUser)
+          });
       if (response.ok) {
-        onUserUpdated(updatedUser);
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "success",
+          title: "Korisnik je uspešno odobren.",
+          showConfirmButton: false,
+          timer: 3000
+        });
+        setUsers(users.map(u => u._id === user._id ? updatedUser : u));
       } else {
+        const data = await response.json();
         Swal.fire({
           icon: "error",
           title: "Greška",
-          text: "Greška pri odobravanju korisnika",
+          text: data.detail || "Greška pri odobravanju korisnika",
+          showConfirmButton: false,
+          timer: 3000
         });
       }
     } catch (err) {
@@ -129,6 +59,8 @@ const Users = () => {
         icon: "error",
         title: "Greška",
         text: "Došlo je do problema pri komunikaciji sa serverom",
+        showConfirmButton: false,
+        timer: 3000
       });
     } finally {
       setLoading(false);
@@ -152,15 +84,23 @@ const Users = () => {
       try {
         const response = await fetch(`${BASE_URL}/user/${userId}`, {
           method: "DELETE",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" }
         });
 
         if (response.ok) {
-          onUserDeleted(userId);
+          Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "success",
+            title: "Korisnik je uspešno obrisan.",
+          })
+          setUsers(users.filter(u => u._id !== userId));
         } else {
           Swal.fire({
             icon: "error",
             title: "Greška",
-            text: "Greška pri brisanju korisnika",
+            text: (await response.json()).detail || "Greška pri brisanju korisnika",
           });
         }
       } catch (err) {
@@ -262,9 +202,10 @@ const Users = () => {
                         </Button>
                       )}
                       <Button
-                        color="danger"
+                        color="dark"
+                        outline
                         size="sm"
-                        style={{ fontWeight: 600, letterSpacing: 0.5, boxShadow: '0 2px 8px #ffb2b2' }}
+                        style={{ fontWeight: 600, letterSpacing: 0.5, boxShadow: '0 2px 8px #888' }}
                         onClick={() => handleDelete(user._id)}
                         disabled={loading}
                       >

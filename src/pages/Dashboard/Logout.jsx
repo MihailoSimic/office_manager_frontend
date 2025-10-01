@@ -14,7 +14,7 @@ function Logout({ activeTab, setActiveTab }) {
     });
 
     localStorage.removeItem("user");
-    navigate("/login");
+    navigate("/");
     
   } catch (err) {
     console.error("Logout nije uspeo", err);

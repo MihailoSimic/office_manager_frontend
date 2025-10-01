@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "reactstrap";
-import Logout from "./Logout";
-import FirstPage from "../components/FirstPage";
-import Reservation from "./Reservation";
-import ChangePassword from "../components/ChangePassword";
+
 import BASE_URL from "../../api/baseUrl";
 import globalStyles from "../../styles/GlobalStyles";
+
+import FirstPage from "../components/FirstPage";
+import ChangePassword from "../components/ChangePassword";
+
+import Reservation from "./Reservation";
+import History from "./History";
+import Logout from "./Logout";
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("home");
   const [seats, setSeats] = useState([]);
@@ -68,6 +72,9 @@ const Dashboard = () => {
         <Button style={buttonStyle(activeTab === "reserve")} disabled = {!user?.approved} onClick={() => setActiveTab("reserve")}>
           Rezerviši mesto
         </Button>
+        <Button style={buttonStyle(activeTab === "history")} disabled = {!user?.approved} onClick={() => setActiveTab("history")}>
+          Istorija
+        </Button>
         <Button style={buttonStyle(activeTab === "password")} disabled = {!user?.approved} onClick={() => setActiveTab("password")}>
           Promeni lozinku
         </Button>
@@ -88,6 +95,7 @@ const Dashboard = () => {
           </Reservation>
           )
         }
+        {activeTab === "history" && <History />}
         {activeTab === "password" && <ChangePassword />}
         {activeTab === "logout" && <Logout activeTab={activeTab} setActiveTab={setActiveTab}/>}
       </div>

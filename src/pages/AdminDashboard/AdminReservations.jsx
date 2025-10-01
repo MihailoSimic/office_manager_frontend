@@ -13,6 +13,32 @@ const AdminReservations = () => {
   const [reservations, setReservations] = useState([]);
   const [seats, setSeats] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedReservation, setSelectedReservation] = useState(null);
+  const groupedSeats = seats.reduce((acc, seat) => {
+    if (!acc[seat.row]) acc[seat.row] = [];
+    acc[seat.row].push(seat);
+    return acc;
+  }, {});
+
+  const sortedReservations = [...reservations].sort((a, b) => {
+    const parseDate = (d) => {
+      if (!d) return 0;
+      if (d.includes("-")) return new Date(d).getTime();
+      const [day, month, year] = d.split(".");
+      return new Date(`${year}-${month}-${day}`).getTime();
+    };
+    return parseDate(b.date) - parseDate(a.date);
+  });
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+  const totalPages = Math.ceil(sortedReservations.length / itemsPerPage);
+  const paginatedReservations = sortedReservations.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const handleSeatClick = (seat) => {
     const reservation = reservations.find(
@@ -49,8 +75,7 @@ const AdminReservations = () => {
           timer: 3000
         });
 
-        const refreshed = await fetch(`${BASE_URL}/reservation`, { credentials: "include" });
-        setReservations(await refreshed.json());
+        setReservations(reservations.map(r => r._id === reservationId ? { ...r, status } : r));
       } else {
         Swal.fire({
           toast: true,
@@ -73,6 +98,61 @@ const AdminReservations = () => {
     }
   };
 
+  const handleDeleteReservation = async (reservationId) => {
+    const result = await Swal.fire({
+      title: "Da li ste sigurni?",
+      text: "Ova akcija će trajno obrisati rezervaciju!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Da, obriši!",
+      cancelButtonText: "Ne, zadrži"
+    });
+    if (!result.isConfirmed) return;
+    try {
+      const res = await fetch(`${BASE_URL}/reservation/${reservationId}`, {
+        method: "DELETE",
+        credentials: "include"
+      });
+      const data = await res.json();
+      if (res.ok) {
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "success",
+          title: data.message || "Rezervacija obrisana!",
+          showConfirmButton: false,
+          timer: 2000
+        });
+        setReservations(reservations.filter(r => r._id !== reservationId));
+      } else {
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "error",
+          title: data.detail || "Greška pri brisanju rezervacije.",
+          showConfirmButton: false,
+          timer: 2000
+        });
+      }
+    } catch (err) {
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: "Greška u komunikaciji sa serverom!",
+        showConfirmButton: false,
+        timer: 2000
+      });
+    }
+  };
+  
+  const handlePageChange = (page) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+  }
+
   useEffect(() => {
     const fetchAll = async () => {
       try {
@@ -93,37 +173,6 @@ const AdminReservations = () => {
     fetchAll();
   }, []);
 
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedReservation, setSelectedReservation] = useState(null);
-  const groupedSeats = seats.reduce((acc, seat) => {
-    if (!acc[seat.row]) acc[seat.row] = [];
-    acc[seat.row].push(seat);
-    return acc;
-  }, {});
-
-  const sortedReservations = [...reservations].sort((a, b) => {
-    const parseDate = (d) => {
-      if (!d) return 0;
-      if (d.includes("-")) return new Date(d).getTime();
-      const [day, month, year] = d.split(".");
-      return new Date(`${year}-${month}-${day}`).getTime();
-    };
-    return parseDate(b.date) - parseDate(a.date);
-  });
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
-  const totalPages = Math.ceil(sortedReservations.length / itemsPerPage);
-  const paginatedReservations = sortedReservations.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  const handlePageChange = (page) => {
-    if (page < 1 || page > totalPages) return;
-    setCurrentPage(page);
-  }
   return (
     <div>
       <h2 className="mb-4 text-center">Sve rezervacije</h2>
@@ -188,14 +237,35 @@ const AdminReservations = () => {
                           <Button
                             color="danger"
                             size="sm"
+                            className="me-2"
                             style={{ fontWeight: 600, letterSpacing: 0.5, boxShadow: '0 2px 8px #ffb2b2' }}
                             onClick={() => handleReservationSubmit(res._id, "rejected")}
                           >
                             Odbij
                           </Button>
+                          <Button
+                            color="dark"
+                            outline
+                            size="sm"
+                            style={{ fontWeight: 600, letterSpacing: 0.5, boxShadow: '0 2px 8px #888' }}
+                            onClick={() => handleDeleteReservation(res._id)}
+                          >
+                            Obriši
+                          </Button>
                         </>
                       ) : (
-                        <span style={{ fontSize: 18, color: '#2ecc40' }}>✔</span>
+                        <>
+                          <Button
+                            color="dark"
+                            outline
+                            size="sm"
+                            className="ms-2"
+                            style={{ fontWeight: 600, letterSpacing: 0.5, boxShadow: '0 2px 8px #888' }}
+                            onClick={() => handleDeleteReservation(res._id)}
+                          >
+                            Obriši
+                          </Button>
+                        </>
                       )}
                     </td>
                   </tr>
@@ -222,7 +292,7 @@ const AdminReservations = () => {
           )}
         </>
       )}
-      <h2 className="mb-4 text-center">Raspored sedenja</h2>
+      <h2 className="mt-3 mb-4 text-center">Raspored sedenja</h2>
       <div style={{ marginBottom: "20px", textAlign: "center" }}>
         <Flatpickr
           data-enable-time={false}

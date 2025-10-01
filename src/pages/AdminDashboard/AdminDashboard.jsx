@@ -10,7 +10,7 @@ import FirstPage from "../components/FirstPage";
 import ChangePassword from "../components/ChangePassword";
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState("reservations")
+  const [activeTab, setActiveTab] = useState("home")
   const user = JSON.parse(localStorage.getItem("user"))
   const sidebarStyle = {
     width: "20%",
