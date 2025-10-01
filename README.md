@@ -25,3 +25,5 @@ If the URL is different, change it in the frontend app configuration (`\src\api\
    ```
 3. The backend will be available at [http://localhost:8000](http://localhost:8000).  
    MongoDB runs in a container and the backend is connected directly via `MONGO_URI=mongodb://mongo:27017/office_manager`.
+
+The frontend will be available at [http://localhost:3000](http://localhost:3000).

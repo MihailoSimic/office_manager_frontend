@@ -30,6 +30,13 @@ const OfficeEditor = () => {
     setSeatsGenerated(true);
   };
 
+  const handleCancel = () => {
+    setGroupedSeats({});
+    setRows(0);
+    setCols(0);
+    setSeatsGenerated(false);
+  }
+
   const toggleSeat = (row, id) => {
     setGroupedSeats((prev) => {
       const newSeats = { ...prev };
@@ -61,6 +68,7 @@ const OfficeEditor = () => {
         return;
       }
       if (response.ok) {
+        handleCancel();
         Swal.fire({
           toast: true,
           position: "top-end",
@@ -135,12 +143,7 @@ const OfficeEditor = () => {
           </Col>
           {seatsGenerated && (
             <Col xs="auto">
-              <Button color="secondary" type="button" onClick={() => {
-                setGroupedSeats({});
-                setRows(0);
-                setCols(0);
-                setSeatsGenerated(false);
-              }}>
+              <Button color="secondary" type="button" onClick={() => handleCancel()} className="me-2">
                 Odustani
               </Button>
             </Col>
