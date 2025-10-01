@@ -13,38 +13,6 @@ const globalStyles = {
     padding: "20px",
     boxSizing: "border-box",
   },
-  content: {
-    textAlign: "center",
-    width: "100%",
-  },
-  title: {
-    fontSize: "clamp(2rem, 5vw, 3rem)",
-    marginBottom: "10px",
-    color: "#333"
-  },
-  subtitle: {
-    fontSize: "clamp(1rem, 3vw, 1.3rem)",
-    marginBottom: "30px",
-    color: "#444"
-  },
-  buttons: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: "20px",
-    flexWrap: "wrap"
-  },
-  button: {
-    padding: "12px 28px",
-    borderRadius: "8px",
-    textDecoration: "none",
-    color: "white",
-    fontWeight: "bold",
-    transition: "0.3s",
-    fontSize: "1rem",
-    minWidth: "120px",
-    textAlign: "center"
-  },
   tableStyle: {
     borderRadius: 18,
     background: 'linear-gradient(135deg, #e0f7fa 0%, #ede7f6 100%)',

@@ -73,11 +73,8 @@ body, html, #root {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-
-    /* Pozadina */
-    background-image: url('/path/to/your/background.jpg'); /* zameni putanju */
-    background-size: cover;        /* pokriva ceo ekran */
-    background-position: center;   /* centrirana */
+    background-size: cover;
+    background-position: center;
     background-repeat: no-repeat;
-    background-attachment: fixed;  /* ostaje pri scroll-u */
+    background-attachment: fixed;
 }

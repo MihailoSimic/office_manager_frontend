@@ -99,8 +99,7 @@ const Users = () => {
       try {
         const response = await fetch(`${BASE_URL}/user/${userId}`, {
           method: "DELETE",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" }
+          credentials: "include"
         });
         if (response.status === 401) {
           TokenExpiredSwal();
@@ -114,6 +113,8 @@ const Users = () => {
             position: "top-end",
             icon: "success",
             title: "Korisnik je uspešno obrisan.",
+            showConfirmButton: false,
+            timer: 3000
           })
           setUsers(users.filter(u => u._id !== userId));
         } else {
@@ -121,6 +122,8 @@ const Users = () => {
             icon: "error",
             title: "Greška",
             text: (await response.json()).detail || "Greška pri brisanju korisnika",
+            showConfirmButton: false,
+            timer: 3000
           });
         }
       } catch (err) {
@@ -129,6 +132,8 @@ const Users = () => {
           icon: "error",
           title: "Greška",
           text: "Došlo je do problema pri komunikaciji sa serverom",
+          showConfirmButton: false,
+          timer: 3000
         });
       } finally {
         setLoading(false);

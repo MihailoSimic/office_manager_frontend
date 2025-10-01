@@ -14,9 +14,9 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<HomePage />} /> {/* početna */}
-        <Route path="/login" element={<Login />} /> {/* login stranica */}
-        <Route path="/register" element={<Register />} /> {/* registracija */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
         {/* Zaštićene rute */}
         <Route

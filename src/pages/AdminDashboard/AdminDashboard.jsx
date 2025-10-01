@@ -8,30 +8,10 @@ import OfficeEditor from "./OfficeEditor";
 
 import FirstPage from "../components/FirstPage";
 import ChangePassword from "../components/ChangePassword";
-
+import globalStyles from "../../styles/GlobalStyles";
+import buttonStyle from "../../styles/ButtonStyle";
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("home")
-  const user = JSON.parse(localStorage.getItem("user"))
-  const sidebarStyle = {
-    width: "20%",
-    background: "rgba(0, 0, 0, 0.4)",
-    color: "#fff",
-    padding: "20px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "15px",
-    borderRadius: "12px",
-    backdropFilter: "blur(10px)",
-  };
-
-  const buttonStyle = (isActive) => ({
-    backgroundColor: isActive ? "#6C63FF" : "rgba(255, 255, 255, 0.3)",
-    border: "none",
-    color: "#fff",
-    fontWeight: "bold",
-    borderRadius: "8px",
-    cursor: "pointer",
-  });
 
   const containerStyle = {
     display: "flex",
@@ -47,7 +27,7 @@ const AdminDashboard = () => {
 
   return (
     <div style={containerStyle}>
-      <div style={sidebarStyle}>
+      <div style={globalStyles.sidebar}>
         <h3>Admin Panel</h3>
         <Button style={buttonStyle(activeTab === "home")} onClick={() => setActiveTab("home")}>
           Početna strana
