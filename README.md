@@ -18,6 +18,8 @@ If the URL is different, change it in the frontend app configuration (`\src\api\
 
 ## Running with Docker
 
+⚠️ **IMPORTANT:** Before running Docker, make sure that both the backend and frontend repositories are located in the same parent folder, so that the relative path `../office_manager_frontend` (used in the Docker setup) is valid.
+
 1. In the root folder of the backend project, there is a `docker-compose.yml` file that starts **MongoDB**, **backend**, and **frontend**.  
 2. Run:
    ```bash
