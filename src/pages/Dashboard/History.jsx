@@ -91,7 +91,7 @@ const History = () => {
     }
   };
 
-  if (loading) return <StyledSpinner />;
+  if (loading) return <StyledSpinner />
 
   const handlePageChange = (page) => {
     if (page < 1 || page > totalPages) return;
