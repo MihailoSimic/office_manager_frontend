@@ -9,8 +9,9 @@ import globalStyles from "../../styles/GlobalStyles";
 import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/material_blue.css";
 import { useNavigate } from "react-router-dom";
-import TokenExpiredSwal from "../utils/TokenExpiredSwal";
-import StyledSpinner from "../utils/StyledSpinner";
+import TokenExpiredSwal from "../components/TokenExpiredSwal";
+import StyledSpinner from "../components/StyledSpinner";
+import TablePagination from "../components/TablePagination";
 const AdminReservations = () => {
   const [reservations, setReservations] = useState([]);
   const [seats, setSeats] = useState([]);
@@ -299,21 +300,11 @@ const AdminReservations = () => {
             </tbody>
           </Table>
           {totalPages > 1 && (
-            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 24 }}>
-              <Pagination size="md">
-                <PaginationItem disabled={currentPage === 1}>
-                  <PaginationLink previous onClick={() => handlePageChange(currentPage - 1)} />
-                </PaginationItem>
-                {[...Array(totalPages)].map((_, idx) => (
-                  <PaginationItem active={currentPage === idx + 1} key={idx}>
-                    <PaginationLink onClick={() => handlePageChange(idx + 1)}>{idx + 1}</PaginationLink>
-                  </PaginationItem>
-                ))}
-                <PaginationItem disabled={currentPage === totalPages}>
-                  <PaginationLink next onClick={() => handlePageChange(currentPage + 1)} />
-                </PaginationItem>
-              </Pagination>
-            </div>
+            <TablePagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
           )}
         </>
       )}

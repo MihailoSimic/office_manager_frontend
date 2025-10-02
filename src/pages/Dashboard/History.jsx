@@ -1,16 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { Button, Table, Spinner } from "reactstrap";
+import { 
+  Button,
+  Table,
+  Spinner,
+  Pagination,
+  PaginationItem,
+  PaginationLink
+} from "reactstrap";
 import Swal from "sweetalert2";
 import { format } from "date-fns/format";
 import { useNavigate } from "react-router-dom";
-import TokenExpiredSwal from "../utils/TokenExpiredSwal";
+import TokenExpiredSwal from "../components/TokenExpiredSwal";
 import BASE_URL from "../../api/baseUrl";
 import globalStyles from "../../styles/GlobalStyles";
-import StyledSpinner from "../utils/StyledSpinner";
+import TablePagination from "../components/TablePagination";
+import StyledSpinner from "../components/StyledSpinner";
 const History = () => {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [canceling, setCanceling] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+  const totalPages = Math.ceil(reservations.length / itemsPerPage);
+  const paginatedReservations = reservations.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const navigate = useNavigate();
 
@@ -78,10 +93,15 @@ const History = () => {
 
   if (loading) return <StyledSpinner />;
 
+  const handlePageChange = (page) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+  };
+
   return (
     <div>
       <h2 className="mb-4 text-center">Istorija rezervacija</h2>
-      <Table bordered hover responsive style={globalStyles.tableStyle}>
+  <Table bordered hover responsive style={globalStyles.tableStyle}>
         <thead>
           <tr>
             <th style={globalStyles.tableHeader}>Datum</th>
@@ -91,14 +111,14 @@ const History = () => {
           </tr>
         </thead>
         <tbody>
-          {reservations.length === 0 ? (
+          {paginatedReservations.length === 0 ? (
             <tr>
               <td colSpan="4" className="text-center" style={{ fontSize: 18, color: '#888', padding: '32px 0' }}>
                 Nema rezervacija
               </td>
             </tr>
           ) : (
-            reservations.map(r => (
+            paginatedReservations.map(r => (
               <tr key={r._id}>
                 <td style={globalStyles.tableCell}>{format(new Date(r.date), "dd.MM.yyyy.")}</td>
                 <td style={globalStyles.tableCell}>{r.seat_number}</td>
@@ -139,6 +159,13 @@ const History = () => {
           )}
         </tbody>
       </Table>
+      {totalPages > 1 && (
+        <TablePagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 };

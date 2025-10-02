@@ -4,8 +4,8 @@ import Flatpickr from "react-flatpickr";
 import format from "date-fns/format";
 import { useNavigate } from "react-router-dom";
 import BASE_URL from "../../api/baseUrl";
-import TokenExpiredSwal from "../utils/TokenExpiredSwal";
-import StyledSpinner from "../utils/StyledSpinner";
+import TokenExpiredSwal from "../components/TokenExpiredSwal";
+import StyledSpinner from "../components/StyledSpinner";
 import Swal from "sweetalert2";
 
 import "flatpickr/dist/themes/material_blue.css";

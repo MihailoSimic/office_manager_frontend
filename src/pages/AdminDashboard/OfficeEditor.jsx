@@ -3,7 +3,7 @@ import { Row, Col, Button, Input, Form, FormGroup, Label } from "reactstrap";
 
 import Swal from "sweetalert2";
 import BASE_URL from "../../api/baseUrl";
-import TokenExpiredSwal from "../utils/TokenExpiredSwal";
+import TokenExpiredSwal from "../components/TokenExpiredSwal";
 const OfficeEditor = () => {
   const [seatsGenerated, setSeatsGenerated] = useState(false);
   const [rows, setRows] = useState(0);
