@@ -4,11 +4,13 @@ import { Row, Col, Button, Input, Form, FormGroup, Label } from "reactstrap";
 import Swal from "sweetalert2";
 import BASE_URL from "../../api/baseUrl";
 import TokenExpiredSwal from "../components/TokenExpiredSwal";
+import { useNavigate } from "react-router-dom";
 const OfficeEditor = () => {
   const [seatsGenerated, setSeatsGenerated] = useState(false);
   const [rows, setRows] = useState(0);
   const [cols, setCols] = useState(0);
   const [groupedSeats, setGroupedSeats] = useState({});
+  const navigate = useNavigate();
 
   const generateSeats = () => {
     let seatNumber = 1;
